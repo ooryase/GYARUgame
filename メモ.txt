@@ -1,0 +1,24 @@
+- 5/9 -
+paiza
+dot install
+progate
+codeIQ
+
+Raywenderlich
+
+- 5/14 -
+ソリューション
+CSXX CS01 CS02 回数
+Sample01 Sample02 例題
+Prac_01 Prac3_02 練習問題
+CSXXProj01 教科書外
+
+- 5/21 -
+dice = r.Next(6) + 1;
+break文：ループを抜ける
+continue文：ループの始点まで飛ばす
+
+- 5/28 - 
+List<float> weights = new List<float>();
+↓
+var weights = new List<float>();
