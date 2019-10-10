@@ -13,10 +13,48 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="ソース ファイル\MainController">
+      <UniqueIdentifier>{acec40c5-1dea-4e64-9038-2fb812aae199}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Scenes">
+      <UniqueIdentifier>{1b8f6c69-8298-42f5-81d2-b8440fbf64d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\MainController">
+      <UniqueIdentifier>{23bb4584-5873-45cb-b687-ed1714589dca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Scenes">
+      <UniqueIdentifier>{1d5b1379-b368-444a-bee6-b73271bbd6bf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="Sources\MainController\GameData.cpp">
+      <Filter>ソース ファイル\MainController</Filter>
     </ClCompile>
+    <ClCompile Include="Sources\MainController\main.cpp">
+      <Filter>ソース ファイル\MainController</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\MainController\SceneController.cpp">
+      <Filter>ソース ファイル\MainController</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Scenes\Title.cpp">
+      <Filter>ソース ファイル\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Scenes\VirtualScene.cpp">
+      <Filter>ソース ファイル\Scenes</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Sources\MainController\GameData.h">
+      <Filter>ヘッダー ファイル\MainController</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\MainController\SceneController.h">
+      <Filter>ヘッダー ファイル\MainController</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Scenes\Title.h">
+      <Filter>ヘッダー ファイル\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Scenes\VirtualScene.h">
+      <Filter>ヘッダー ファイル\Scenes</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

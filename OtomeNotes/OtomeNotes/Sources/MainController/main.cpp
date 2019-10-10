@@ -1,5 +1,6 @@
 #include "DxLib.h"
 #include <stdio.h>
+#include"SceneController.h"
 
 int WINAPI WinMain(
 	_In_ HINSTANCE hInstance,
@@ -45,17 +46,20 @@ int WINAPI WinMain(
 		return -1;
 	}
 
+	SceneController sceneController;
+
 	while (ProcessMessage() == 0 && CheckHitKey(KEY_INPUT_ESCAPE) == 0)
 	{
-		ClearDrawScreen();//裏画面消す
-		SetDrawScreen(DX_SCREEN_BACK);//描画先を裏画面に
+		if (sceneController.SystemUpdate() != 0)
+			break;
+
 
 		//
 		//ここに毎フレーム呼ぶ処理を書く
+
 		//
 		WaitTimer(20);
 
-		ScreenFlip();//裏画面を表画面にコピー
 
 	}
 	//Dxライブラリ終了処理

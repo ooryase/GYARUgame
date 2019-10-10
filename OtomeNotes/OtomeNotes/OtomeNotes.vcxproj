@@ -18,6 +18,19 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Sources\MainController\GameData.cpp" />
+    <ClCompile Include="Sources\MainController\main.cpp" />
+    <ClCompile Include="Sources\MainController\SceneController.cpp" />
+    <ClCompile Include="Sources\Scenes\Title.cpp" />
+    <ClCompile Include="Sources\Scenes\VirtualScene.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Sources\MainController\GameData.h" />
+    <ClInclude Include="Sources\MainController\SceneController.h" />
+    <ClInclude Include="Sources\Scenes\Title.h" />
+    <ClInclude Include="Sources\Scenes\VirtualScene.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{5e9612f7-91dc-42c7-ade4-b09ef7d95030}</ProjectGuid>
@@ -76,10 +89,10 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\k019g1347\DXライブラリ\DxLib_VC\プロジェクトに追加すべきファイル_VC用</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\8oo36\Documents\Tools\DxLib_VC\プロジェクトに追加すべきファイル_VC用</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>D:\k019g1347\DXライブラリ\DxLib_VC\プロジェクトに追加すべきファイル_VC用</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\8oo36\Documents\Tools\DxLib_VC\プロジェクトに追加すべきファイル_VC用</AdditionalLibraryDirectories>
       <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -122,9 +135,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="main.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
