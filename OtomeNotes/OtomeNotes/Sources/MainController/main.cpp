@@ -11,8 +11,8 @@ int WINAPI WinMain(
 {
 	const char TITLE[] = "オトメノーツ"; //もう変更されない
 
-	int WinWidth = 1920;
-	int WinHeight = 1080;
+	int WinWidth = 1280;
+	int WinHeight = 720;
 
 	int MapWidth = 640;
 	int MapHeight = 480;
@@ -29,7 +29,7 @@ int WINAPI WinMain(
 	SetMainWindowText(TITLE);
 	
 	//画面サイズの最大サイズ、カラービット数を設定
-	SetGraphMode(MapWidth, MapHeight, 32);
+	SetGraphMode(WinWidth, WinHeight, 32);
 
 	//画面サイズを設定
 	SetWindowSizeExtendRate(1, 0);

@@ -3,7 +3,7 @@
 
 class VirtualScene
 {
-private:
+protected:
 	std::shared_ptr<VirtualScene> nextScene;
 
 public:

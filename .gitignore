@@ -72,3 +72,6 @@ $RECYCLE.BIN/
 
 #SonarQube working folder
 .sonar/
+
+#Assets
+Assets/
