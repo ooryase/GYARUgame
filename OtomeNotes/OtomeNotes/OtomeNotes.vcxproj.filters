@@ -42,6 +42,12 @@
     <ClCompile Include="Sources\Scenes\VirtualScene.cpp">
       <Filter>ソース ファイル\Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="Sources\MainController\InputController.cpp">
+      <Filter>ソース ファイル\MainController</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\MainController\TimeManager.cpp">
+      <Filter>ソース ファイル\MainController</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sources\MainController\GameData.h">
@@ -55,6 +61,12 @@
     </ClInclude>
     <ClInclude Include="Sources\Scenes\VirtualScene.h">
       <Filter>ヘッダー ファイル\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\MainController\InputController.h">
+      <Filter>ヘッダー ファイル\MainController</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\MainController\TimeManager.h">
+      <Filter>ヘッダー ファイル\MainController</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

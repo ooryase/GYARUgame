@@ -2,14 +2,19 @@
 #include"DxLib.h"
 #include"SceneController.h"
 #include"../Scenes/Title.h"
+#include"InputController.h"
 
 SceneController::SceneController()
 {
 	currentScene = std::make_shared<Title>();
+
+	InputController::getInstance().Init();
 }
 
 int SceneController::SystemUpdate()
 {
+	InputController::getInstance().InputUpdate();
+
 	currentScene->Update();
 
 	DrawBegin();

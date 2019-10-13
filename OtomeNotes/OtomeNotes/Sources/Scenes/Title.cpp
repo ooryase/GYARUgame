@@ -1,6 +1,7 @@
 #include<iostream>
 #include"DxLib.h"
 #include"Title.h"
+#include"../MainController/InputController.h"
 
 Title::Title() : VirtualScene(),
 	titleGraphHandle(LoadGraph("Assets/Textures/Title/Title.jpg")),
@@ -21,14 +22,14 @@ void Title::Update()
 	switch (phase)
 	{
 	case TitlePhaseList::START:
-		if (CheckHitKeyAll())
+		if (InputController::getInstance().GetPush(KEY_INPUT_Z))
 		{
 			PlayMovieToGraph(movieHandle);
 			phase = TitlePhaseList::MOVIE;
 		}
 		break;
 	case TitlePhaseList::MOVIE:
-		if (GetMovieStateToGraph(movieHandle) != 1 || CheckHitKey(KEY_INPUT_Z))
+		if (GetMovieStateToGraph(movieHandle) != 1 || InputController::getInstance().GetPush(KEY_INPUT_Z))
 		{
 			phase = TitlePhaseList::NEXT;
 			nextScene = std::make_shared<Title>();
