@@ -16,6 +16,7 @@ private:
 	};
 
 	TitlePhaseList phase;
+	bool movieSkip;
 
 public:
 	Title();

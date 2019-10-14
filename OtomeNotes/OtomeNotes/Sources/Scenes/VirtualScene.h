@@ -1,10 +1,13 @@
-#include<iostream>
 #pragma once
+#include<iostream>
+#include"../MainController/TimeManager.h"
 
 class VirtualScene
 {
 protected:
 	std::shared_ptr<VirtualScene> nextScene;
+
+	TimeManager time;
 
 public:
 	VirtualScene();

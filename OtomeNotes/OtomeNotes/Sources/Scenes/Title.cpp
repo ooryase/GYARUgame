@@ -9,6 +9,7 @@ Title::Title() : VirtualScene(),
 	movieHandle(LoadGraph("Assets/Movies/gbf_mv_20170809.mp4"))
 {
 	phase = TitlePhaseList::START;
+	movieSkip = false;
 }
 
 Title::~Title()
@@ -19,6 +20,8 @@ Title::~Title()
 
 void Title::Update()
 {
+	time.TimeUpdate();
+
 	switch (phase)
 	{
 	case TitlePhaseList::START:
@@ -26,14 +29,26 @@ void Title::Update()
 		{
 			PlayMovieToGraph(movieHandle);
 			phase = TitlePhaseList::MOVIE;
+			time.Reset();
 		}
 		break;
 	case TitlePhaseList::MOVIE:
-		if (GetMovieStateToGraph(movieHandle) != 1 || InputController::getInstance().GetPush(KEY_INPUT_Z))
+		if (GetMovieStateToGraph(movieHandle) != 1 || 
+			(InputController::getInstance().GetPush(KEY_INPUT_Z) &&	movieSkip))
 		{
 			phase = TitlePhaseList::NEXT;
 			nextScene = std::make_shared<Title>();
 		}
+
+		if (!movieSkip)
+		{
+			if (movieSkip = InputController::getInstance().GetPush(KEY_INPUT_Z))
+				time.Reset();
+		}
+		else
+			if (time.GetTimeCount() > 5000)
+				movieSkip = false;
+		break;
 	default:
 		break;
 	}
@@ -51,6 +66,8 @@ void Title::Draw() const
 	default:
 		break;
 	}
+
+	printfDx("%d \n", time.GetTimeCount());
 }
 
 void Title::DrawTitle() const
@@ -61,7 +78,7 @@ void Title::DrawTitle() const
 
 	DrawExtendGraph(300, 0, x - 300, y, titleGraphHandle, TRUE);
 
-	auto a = static_cast<int>((std::cos(GetNowCount() / 150.0) + 1.0) * 255.0);
+	auto a = static_cast<int>((std::cos(time.GetTimeCount() / 150.0) + 1.0) * 255.0);
 	a = (a > 255) ? 255 : a;
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, a);
 	DrawExtendGraph(x / 2 - 400, y / 3 * 2, x / 2 + 400, y / 3 * 2 + 200, textGraphHandle, TRUE);
@@ -74,6 +91,14 @@ void Title::DrawMovie() const
 	GetScreenState(&x,&y,&c);
 	DrawExtendGraph(0, 0, x, y, movieHandle, FALSE);
 
+	if (movieSkip)
+	{
+		auto a = static_cast<int>((std::cos(time.GetTimeCount() / 150.0) + 1.0) * 255.0);
+		a = (a > 255) ? 255 : a;
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, a);
+		DrawExtendGraph(x / 2 - 400, y / 3 * 2, x / 2 + 400, y / 3 * 2 + 200, textGraphHandle, TRUE);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	}
 	// ウエイトをかけます、あまり速く描画すると画面がちらつくからです
 	WaitTimer(17);
 
