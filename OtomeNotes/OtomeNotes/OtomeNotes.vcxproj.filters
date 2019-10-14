@@ -48,6 +48,9 @@
     <ClCompile Include="Sources\MainController\TimeManager.cpp">
       <Filter>ソース ファイル\MainController</Filter>
     </ClCompile>
+    <ClCompile Include="Sources\Scenes\StageSelect.cpp">
+      <Filter>ソース ファイル\Scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sources\MainController\GameData.h">
@@ -67,6 +70,9 @@
     </ClInclude>
     <ClInclude Include="Sources\MainController\TimeManager.h">
       <Filter>ヘッダー ファイル\MainController</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Scenes\StageSelect.h">
+      <Filter>ヘッダー ファイル\Scenes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -2,6 +2,7 @@
 #include"DxLib.h"
 #include"Title.h"
 #include"../MainController/InputController.h"
+#include"StageSelect.h"
 
 Title::Title() : VirtualScene(),
 	titleGraphHandle(LoadGraph("Assets/Textures/Title/Title.jpg")),
@@ -37,7 +38,7 @@ void Title::Update()
 			(InputController::getInstance().GetPush(KEY_INPUT_Z) &&	movieSkip))
 		{
 			phase = TitlePhaseList::NEXT;
-			nextScene = std::make_shared<Title>();
+			nextScene = std::make_shared<StageSelect>();
 		}
 
 		if (!movieSkip)
