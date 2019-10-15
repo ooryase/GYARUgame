@@ -67,8 +67,6 @@ void Title::Draw() const
 	default:
 		break;
 	}
-
-	printfDx("%d \n", time.GetTimeCount());
 }
 
 void Title::DrawTitle() const

@@ -8,7 +8,17 @@ private:
 	std::vector<int> stageImageHandle;
 
 	double radian;
+	const double PI;
+	int selectStage;
 
+	enum RoratePhase
+	{
+		START,
+		ROTATE,
+		STOP,
+		DECISION
+	};
+	RoratePhase rotatePhase;
 public:
 	StageSelect();
 	~StageSelect();
