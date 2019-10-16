@@ -8,8 +8,10 @@ private:
 	GameData(const GameData&) = delete;
 	GameData& operator = (const GameData&) = delete;
 
-	int Score;
 public:
+	int Score;
+	int Stage;
+
 	static GameData& getInstance();
 
 	void Init();

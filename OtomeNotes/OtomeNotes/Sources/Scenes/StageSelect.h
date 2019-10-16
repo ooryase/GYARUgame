@@ -24,5 +24,10 @@ public:
 	~StageSelect();
 
 	void Update();
+	void RotateUpdate();
 	void Draw() const;
+private:
+	//intŒ^‚Ì‚ðdouble‚ÅŠ„‚Á‚½’l‚ðint‚É’¼‚µ‚Ä“n‚·
+	int Perf(int i,double perf) const;
+
 };

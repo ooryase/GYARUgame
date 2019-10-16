@@ -24,6 +24,8 @@ public:
 
 	void Update();
 	void Draw() const;
+
+private:
 	void DrawTitle() const;
 	void DrawMovie() const;
 };

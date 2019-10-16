@@ -58,7 +58,7 @@ int WINAPI WinMain(
 		//‚±‚±‚É–ˆƒtƒŒ[ƒ€ŒÄ‚Ôˆ—‚ğ‘‚­
 
 		//
-		WaitTimer(20);
+		//WaitTimer(20);
 
 
 	}
