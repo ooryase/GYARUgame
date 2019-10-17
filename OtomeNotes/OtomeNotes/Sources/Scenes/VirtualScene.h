@@ -7,7 +7,7 @@ class VirtualScene
 protected:
 	std::shared_ptr<VirtualScene> nextScene;
 
-	TimeManager time;
+	std::shared_ptr<TimeManager> time;
 
 public:
 	VirtualScene();

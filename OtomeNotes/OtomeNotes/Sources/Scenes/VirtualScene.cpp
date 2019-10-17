@@ -4,7 +4,7 @@
 VirtualScene::VirtualScene()
 {
 	nextScene = nullptr;
-	time = TimeManager();
+	time = std::make_shared<TimeManager>();
 }
 
 std::shared_ptr<VirtualScene> VirtualScene::GetNextScene()

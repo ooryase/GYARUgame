@@ -39,9 +39,6 @@
     <ClCompile Include="Sources\Scenes\Title.cpp">
       <Filter>ソース ファイル\Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\Scenes\VirtualScene.cpp">
-      <Filter>ソース ファイル\Scenes</Filter>
-    </ClCompile>
     <ClCompile Include="Sources\MainController\InputController.cpp">
       <Filter>ソース ファイル\MainController</Filter>
     </ClCompile>
@@ -49,6 +46,12 @@
       <Filter>ソース ファイル\MainController</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Scenes\StageSelect.cpp">
+      <Filter>ソース ファイル\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Scenes\GameMain.cpp">
+      <Filter>ソース ファイル\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Scenes\VirtualScene.cpp">
       <Filter>ソース ファイル\Scenes</Filter>
     </ClCompile>
   </ItemGroup>
@@ -72,6 +75,9 @@
       <Filter>ヘッダー ファイル\MainController</Filter>
     </ClInclude>
     <ClInclude Include="Sources\Scenes\StageSelect.h">
+      <Filter>ヘッダー ファイル\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Scenes\GameMain.h">
       <Filter>ヘッダー ファイル\Scenes</Filter>
     </ClInclude>
   </ItemGroup>

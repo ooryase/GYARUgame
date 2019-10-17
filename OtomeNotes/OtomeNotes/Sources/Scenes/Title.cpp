@@ -21,7 +21,7 @@ Title::~Title()
 
 void Title::Update()
 {
-	time.TimeUpdate();
+	time->TimeUpdate();
 
 	switch (phase)
 	{
@@ -30,7 +30,7 @@ void Title::Update()
 		{
 			PlayMovieToGraph(movieHandle);
 			phase = TitlePhaseList::MOVIE;
-			time.Reset();
+			time->Reset();
 		}
 		break;
 	case TitlePhaseList::MOVIE:
@@ -44,10 +44,10 @@ void Title::Update()
 		if (!movieSkip)
 		{
 			if (movieSkip = InputController::getInstance().GetPush(KEY_INPUT_Z))
-				time.Reset();
+				time->Reset();
 		}
 		else
-			if (time.GetTimeCount() > 5000)
+			if (time->GetTimeCount() > 5000)
 				movieSkip = false;
 		break;
 	default:
@@ -77,7 +77,7 @@ void Title::DrawTitle() const
 
 	DrawExtendGraph(300, 0, x - 300, y, titleGraphHandle, TRUE);
 
-	auto a = static_cast<int>((std::cos(time.GetTimeCount() / 150.0) + 1.0) * 255.0);
+	auto a = static_cast<int>((std::cos(time->GetTimeCount() / 150.0) + 1.0) * 255.0);
 	a = (a > 255) ? 255 : a;
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, a);
 	DrawExtendGraph(x / 2 - 400, y / 3 * 2, x / 2 + 400, y / 3 * 2 + 200, textGraphHandle, TRUE);
@@ -92,7 +92,7 @@ void Title::DrawMovie() const
 
 	if (movieSkip)
 	{
-		auto a = static_cast<int>((std::cos(time.GetTimeCount() / 150.0) + 1.0) * 255.0);
+		auto a = static_cast<int>((std::cos(time->GetTimeCount() / 150.0) + 1.0) * 255.0);
 		a = (a > 255) ? 255 : a;
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, a);
 		DrawExtendGraph(x / 2 - 400, y / 3 * 2, x / 2 + 400, y / 3 * 2 + 200, textGraphHandle, TRUE);
