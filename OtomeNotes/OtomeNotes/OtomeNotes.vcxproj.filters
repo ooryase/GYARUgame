@@ -25,6 +25,12 @@
     <Filter Include="ヘッダー ファイル\Scenes">
       <UniqueIdentifier>{1d5b1379-b368-444a-bee6-b73271bbd6bf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Scenes\GameMain">
+      <UniqueIdentifier>{44417964-369f-4a34-b10f-05d063cbb686}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Scenes\GameMain">
+      <UniqueIdentifier>{60a4504f-d72f-430b-80c6-361138ff3ec3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sources\MainController\GameData.cpp">
@@ -54,6 +60,9 @@
     <ClCompile Include="Sources\Scenes\VirtualScene.cpp">
       <Filter>ソース ファイル\Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="Sources\Scenes\GameMain\Notes.cpp">
+      <Filter>ソース ファイル\Scenes\GameMain</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sources\MainController\GameData.h">
@@ -79,6 +88,9 @@
     </ClInclude>
     <ClInclude Include="Sources\Scenes\GameMain.h">
       <Filter>ヘッダー ファイル\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Scenes\GameMain\Notes.h">
+      <Filter>ヘッダー ファイル\Scenes\GameMain</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -16,7 +16,7 @@ GameMain::GameMain() : VirtualScene(),
 	popText.clear();
 
 	textX = 200;
-	textY = 500;
+	textY = 600;
 
 }
 
@@ -34,14 +34,43 @@ void GameMain::Update()
 	if (waitTime <= 0 && !FileRead_eof(fileHandle))
 	{
 		FileRead_gets(readText, 256, fileHandle);
-		waitTime = 1300;
+//		waitTime = 1300;
 
+		if (readText[8] == 'C')
+		{
+			popText.clear();
+			textX = 200;
+			textY = 600;
+		}
+		else if (readText[8] == 'E')
+		{
+			textX = 200;
+			textY += 50;
+		}
+
+		if (readText[0] == 'N')
+		{
+			switch (readText[1])
+			{
+			case 'N':
+
+				break;
+			case 'L':
+				
+				break;
+			case 'P':
+
+				break;
+			default:
+				break;
+			}
+		}
 		popText.push_back(std::make_unique<PopText>(readText, textX, textY));
 		textX += 30;
 		//popText[0] = readText[0];
 		//popText[1] = readText[1];
 
-		waitTime = (readText[3] - '0') * 1000;
+		waitTime += (readText[3] - '0') * 1000;
 		waitTime += (readText[4] - '0') * 100;
 		waitTime += (readText[5] - '0') * 10;
 		waitTime += readText[6] - '0';
