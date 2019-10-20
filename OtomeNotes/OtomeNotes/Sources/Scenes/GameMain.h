@@ -1,7 +1,9 @@
 #include<vector>
 #include"VirtualScene.h"
+#include"GameMain/Notes.h"
+#include"GameMain/PopText.h"
 #include"../MainController/TimeManager.h"
-
+#include"../Particles/VirtualParticle.h"
 
 class GameMain : public VirtualScene
 {
@@ -19,28 +21,19 @@ private:
 	//char popText[2];
 	int textX, textY;
 
-	class PopText
-	{
-	private:
-		int time;
-		char text[256];
-		int x, baseX, y, baseY;
+	std::vector<std::shared_ptr<PopText>> popText;
+	std::vector<std::shared_ptr<Notes>> notes;
 
-	public:
-		PopText(char* _text, int _x, int _y);
+	std::vector<std::shared_ptr<VirtualParticle>> particles;
 
-		void Update(std::shared_ptr<TimeManager> timeManager);
-		void Draw(int fontHandle) const;
-
-		bool Dead();
-	};
-
-	std::vector<std::unique_ptr<PopText>> popText;
-
+	int score;
 public:
 	GameMain();
 	~GameMain();
 
 	void Update();
 	void Draw() const;
+
+private:
+	void TextRead();
 };

@@ -31,6 +31,12 @@
     <Filter Include="ヘッダー ファイル\Scenes\GameMain">
       <UniqueIdentifier>{60a4504f-d72f-430b-80c6-361138ff3ec3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\Particles">
+      <UniqueIdentifier>{15871ed8-e5f6-4356-9b2c-637dc56f8e44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Particles">
+      <UniqueIdentifier>{1d998f27-8794-4793-908f-8f351bbd1991}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sources\MainController\GameData.cpp">
@@ -63,6 +69,15 @@
     <ClCompile Include="Sources\Scenes\GameMain\Notes.cpp">
       <Filter>ソース ファイル\Scenes\GameMain</Filter>
     </ClCompile>
+    <ClCompile Include="Sources\Particles\VirtualParticle.cpp">
+      <Filter>ソース ファイル\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Particles\EvalutionText.cpp">
+      <Filter>ソース ファイル\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Scenes\GameMain\PopText.cpp">
+      <Filter>ソース ファイル\Scenes\GameMain</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sources\MainController\GameData.h">
@@ -90,6 +105,15 @@
       <Filter>ヘッダー ファイル\Scenes</Filter>
     </ClInclude>
     <ClInclude Include="Sources\Scenes\GameMain\Notes.h">
+      <Filter>ヘッダー ファイル\Scenes\GameMain</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Particles\VirtualParticle.h">
+      <Filter>ヘッダー ファイル\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Particles\EvalutionText.h">
+      <Filter>ヘッダー ファイル\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Scenes\GameMain\PopText.h">
       <Filter>ヘッダー ファイル\Scenes\GameMain</Filter>
     </ClInclude>
   </ItemGroup>

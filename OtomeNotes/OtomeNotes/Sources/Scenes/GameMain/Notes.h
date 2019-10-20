@@ -1,6 +1,9 @@
 
 class Notes
 {
+private:
+	const int notesHandle;
+
 public:
 	enum class NotesType
 	{
@@ -9,20 +12,27 @@ public:
 		REPEATED
 	};
 
-	enum class Evalution
+	enum class EvalutionType
 	{
 		PERFECT,
 		GOOD,
 		BAD,
-		NULL
+		DEFAULT
 	};
+
+	EvalutionType Evalution;
+
+	bool Dead;
 private:
 	NotesType notesType;
 
 	int time;
 
 
-
 public:
-	Notes();
+	Notes(NotesType _notesType,int _notesHandle);
+
+	void Update(int deltaTime);
+
+	void Draw(int centerX, int centerY) const;
 };

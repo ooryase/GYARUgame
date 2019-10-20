@@ -90,7 +90,7 @@ void StageSelect::Draw() const
 
 #define SIH(num) stageImageHandle.at((selectStage + stageImageHandle.size() + num) % stageImageHandle.size())
 
-	int a = 255 * time->GetTimeCount() / 1000.0;
+	int a = static_cast<int>( 255.0 * time->GetTimeCount() / 1000.0);
 	switch (rotatePhase)
 	{
 	case StageSelect::START:

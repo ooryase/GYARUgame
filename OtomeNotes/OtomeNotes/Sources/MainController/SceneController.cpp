@@ -2,6 +2,7 @@
 #include"DxLib.h"
 #include"SceneController.h"
 #include"../Scenes/Title.h"
+#include"../Scenes/GameMain.h"
 #include"InputController.h"
 
 SceneController::SceneController()
