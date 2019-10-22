@@ -18,40 +18,11 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Sources\MainController\GameData.cpp" />
-    <ClCompile Include="Sources\MainController\InputController.cpp" />
-    <ClCompile Include="Sources\MainController\main.cpp" />
-    <ClCompile Include="Sources\MainController\SceneController.cpp" />
-    <ClCompile Include="Sources\MainController\TimeManager.cpp" />
-    <ClCompile Include="Sources\Particles\EvalutionText.cpp" />
-    <ClCompile Include="Sources\Particles\VirtualParticle.cpp" />
-    <ClCompile Include="Sources\Scenes\GameMain.cpp" />
-    <ClCompile Include="Sources\Scenes\GameMain\Notes.cpp" />
-    <ClCompile Include="Sources\Scenes\GameMain\PopText.cpp" />
-    <ClCompile Include="Sources\Scenes\StageSelect.cpp" />
-    <ClCompile Include="Sources\Scenes\Title.cpp" />
-    <ClCompile Include="Sources\Scenes\VirtualScene.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Sources\MainController\GameData.h" />
-    <ClInclude Include="Sources\MainController\InputController.h" />
-    <ClInclude Include="Sources\MainController\SceneController.h" />
-    <ClInclude Include="Sources\MainController\TimeManager.h" />
-    <ClInclude Include="Sources\Particles\EvalutionText.h" />
-    <ClInclude Include="Sources\Particles\VirtualParticle.h" />
-    <ClInclude Include="Sources\Scenes\GameMain.h" />
-    <ClInclude Include="Sources\Scenes\GameMain\Notes.h" />
-    <ClInclude Include="Sources\Scenes\GameMain\PopText.h" />
-    <ClInclude Include="Sources\Scenes\StageSelect.h" />
-    <ClInclude Include="Sources\Scenes\Title.h" />
-    <ClInclude Include="Sources\Scenes\VirtualScene.h" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{5e9612f7-91dc-42c7-ade4-b09ef7d95030}</ProjectGuid>
+    <ProjectGuid>{EDA37CA7-271F-49FA-875F-387668B0A286}</ProjectGuid>
     <RootNamespace>OtomeNotes</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -128,13 +99,12 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\k019g1347\DXライブラリ\DxLib_VC\プロジェクトに追加すべきファイル_VC用</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\8oo36\Documents\Tools\DxLib_VC\プロジェクトに追加すべきファイル_VC用</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>D:\k019g1347\DXライブラリ\DxLib_VC\プロジェクトに追加すべきファイル_VC用</AdditionalLibraryDirectories>
-      <SubSystem>Windows</SubSystem>
+      <AdditionalLibraryDirectories>C:\Users\8oo36\Documents\Tools\DxLib_VC\プロジェクトに追加すべきファイル_VC用</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -151,6 +121,41 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Sources\MainController\GameData.cpp" />
+    <ClCompile Include="Sources\MainController\InputController.cpp" />
+    <ClCompile Include="Sources\MainController\main.cpp">
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Users\8oo36\Documents\Tools\DxLib_VC\プロジェクトに追加すべきファイル_VC用</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="Sources\MainController\SceneController.cpp" />
+    <ClCompile Include="Sources\MainController\TimeManager.cpp" />
+    <ClCompile Include="Sources\Particles\EvalutionText.cpp" />
+    <ClCompile Include="Sources\Particles\VirtualParticle.cpp" />
+    <ClCompile Include="Sources\Scenes\GameMain.cpp" />
+    <ClCompile Include="Sources\Scenes\GameMain\LongNotes.cpp" />
+    <ClCompile Include="Sources\Scenes\GameMain\Notes.cpp" />
+    <ClCompile Include="Sources\Scenes\GameMain\PopText.cpp" />
+    <ClCompile Include="Sources\Scenes\GameMain\RepeatedNotes.cpp" />
+    <ClCompile Include="Sources\Scenes\StageSelect.cpp" />
+    <ClCompile Include="Sources\Scenes\Title.cpp" />
+    <ClCompile Include="Sources\Scenes\VirtualScene.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Sources\MainController\GameData.h" />
+    <ClInclude Include="Sources\MainController\InputController.h" />
+    <ClInclude Include="Sources\MainController\SceneController.h" />
+    <ClInclude Include="Sources\MainController\TimeManager.h" />
+    <ClInclude Include="Sources\Particles\EvalutionText.h" />
+    <ClInclude Include="Sources\Particles\VirtualParticle.h" />
+    <ClInclude Include="Sources\Scenes\GameMain.h" />
+    <ClInclude Include="Sources\Scenes\GameMain\LongNotes.h" />
+    <ClInclude Include="Sources\Scenes\GameMain\Notes.h" />
+    <ClInclude Include="Sources\Scenes\GameMain\PopText.h" />
+    <ClInclude Include="Sources\Scenes\GameMain\RepeatedNotes.h" />
+    <ClInclude Include="Sources\Scenes\StageSelect.h" />
+    <ClInclude Include="Sources\Scenes\Title.h" />
+    <ClInclude Include="Sources\Scenes\VirtualScene.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

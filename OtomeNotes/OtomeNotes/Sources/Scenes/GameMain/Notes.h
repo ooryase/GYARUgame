@@ -1,17 +1,11 @@
+#pragma once
 
 class Notes
 {
-private:
+protected:
 	const int notesHandle;
 
 public:
-	enum class NotesType
-	{
-		NORMAL,
-		LONG,
-		REPEATED
-	};
-
 	enum class EvalutionType
 	{
 		PERFECT,
@@ -23,16 +17,18 @@ public:
 	EvalutionType Evalution;
 
 	bool Dead;
-private:
-	NotesType notesType;
+protected:
 
 	int time;
+	int popToJustTime; //ノーツ生成からジャストタイムまで(予兆)の時間
+	bool push;
 
-
+	EvalutionType NotesEvalution(int justTime);
 public:
-	Notes(NotesType _notesType,int _notesHandle);
+	Notes(int _notesHandle);
 
-	void Update(int deltaTime);
+	virtual void Update(int deltaTime);
+	virtual void Draw(int centerX, int centerY) const;
 
-	void Draw(int centerX, int centerY) const;
+	virtual void Push();
 };

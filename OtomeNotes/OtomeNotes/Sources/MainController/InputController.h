@@ -16,6 +16,7 @@ private:
 	public:
 		bool Push;
 		bool Press;
+		bool Release;
 
 		KeyState();
 
@@ -31,7 +32,8 @@ public:
 
 	bool GetPush(int keyCode) const;
 	bool GetPress(int keyCode) const;
-	
+	bool GetRelease(int keyCode) const;
+
 
 	/*public static void InputUpdate()
 	{

@@ -1,6 +1,8 @@
 #include<vector>
 #include"VirtualScene.h"
 #include"GameMain/Notes.h"
+#include"GameMain/LongNotes.h"
+#include"GameMain/RepeatedNotes.h"
 #include"GameMain/PopText.h"
 #include"../MainController/TimeManager.h"
 #include"../Particles/VirtualParticle.h"
@@ -8,13 +10,16 @@
 class GameMain : public VirtualScene
 {
 private:
+	const int modelHandle;
 	const int fileHandle;
 	const int fontHandle;
 	const int buttonHandle;
-	const int notesHandle;
+	int notesHandle[3];
+	int LongNotesHandle[3];
 	const int osakabechankariHandle;
 	const int roomHandle;
 	const int textFrameHandle;
+	const int SE_notesHandle;
 
 	int waitTime;
 	char readText[256];

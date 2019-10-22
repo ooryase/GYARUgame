@@ -1,14 +1,15 @@
 #include"Notes.h"
 #include"../../MainController/InputController.h"
 
-Notes::Notes(NotesType _notesType,int _notesHandle) :
+Notes::Notes(int _notesHandle) :
 	notesHandle(_notesHandle)
 {
 	time = 0;
-	notesType = _notesType;
+	popToJustTime = 1000;
 	Evalution = EvalutionType::DEFAULT;
 
 	Dead = false;
+	push = false;
 }
 
 void Notes::Update(int deltaTime)
@@ -17,29 +18,40 @@ void Notes::Update(int deltaTime)
 
 	if (InputController::getInstance().GetPush(KEY_INPUT_Z))
 	{
-
-		if (abs(time - 600) < 50)
-		{
-			Evalution = EvalutionType::PERFECT;
-		}
-		else if (abs(time - 600) < 250)
-		{
-			Evalution = EvalutionType::GOOD;
-		}
-		else if (abs(time - 600) < 300)
-		{
-			Evalution = EvalutionType::BAD;
-		}
+		Evalution = NotesEvalution(time - popToJustTime);
 	}
 	
-	Dead = (time > 1200);
+	Dead = (time > popToJustTime + 300);
 }
 
 void Notes::Draw(int centerX,int centerY) const
 {
-	int rate = static_cast<int>(60.0 * (1.0 - time / 600.0));
-	printfDx("%d\n", rate);
+	int rate = static_cast<int>(80.0 * (1.0 - time / static_cast<double>(popToJustTime)));
 	DrawExtendGraph(centerX - 70 - rate, centerY - 70 - rate, centerX + 70 + rate, centerY + 70 + rate, notesHandle, TRUE);
 
 
+}
+
+Notes::EvalutionType Notes::NotesEvalution(int justTime)
+{
+	if (abs(justTime) < 50)
+	{
+		return EvalutionType::PERFECT;
+	}
+	else if (abs(justTime) < 250)
+	{
+		return EvalutionType::GOOD;
+	}
+	else if (abs(justTime) < 300)
+	{
+		return EvalutionType::BAD;
+	}
+	else
+		return EvalutionType::DEFAULT;
+}
+
+void Notes::Push()
+{
+	Dead = true;
+	Evalution = EvalutionType::DEFAULT;
 }

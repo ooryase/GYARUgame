@@ -27,28 +27,26 @@ void InputController::InputUpdate()
 
 InputController::KeyState::KeyState()
 {
-	Push = Press = false;
+	Push = Press = Release = false;
 }
 
 void InputController::KeyState::InputUpdate(bool input)
 {
-	if (input)
+	/*if (input)
 	{
-		if (Press)
-		{
-			Push = false;
-		}
-		else
-		{
-			Push = true;
-			Press = true;
-		}
+		Push = !Press;
+		Press = true;
+		Release = false;
 	}
 	else
 	{
+		Release = Press;
 		Push = false;
 		Press = false;
-	}
+	}*/
+	Push = (input && !Press);
+	Release = (!input && Press);
+	Press = input;
 }
 
 bool InputController::GetPush(int keyCode) const
@@ -59,4 +57,9 @@ bool InputController::GetPush(int keyCode) const
 bool InputController::GetPress(int keyCode) const
 {
 	return keys.find(keyCode)->second.Press;
+}
+
+bool InputController::GetRelease(int keyCode) const
+{
+	return keys.find(keyCode)->second.Release;
 }

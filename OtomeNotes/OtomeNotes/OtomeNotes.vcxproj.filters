@@ -14,68 +14,74 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="ソース ファイル\MainController">
-      <UniqueIdentifier>{acec40c5-1dea-4e64-9038-2fb812aae199}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\Scenes">
-      <UniqueIdentifier>{1b8f6c69-8298-42f5-81d2-b8440fbf64d4}</UniqueIdentifier>
+      <UniqueIdentifier>{9054ea01-5276-4f87-a23b-13dc6aa535db}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダー ファイル\MainController">
-      <UniqueIdentifier>{23bb4584-5873-45cb-b687-ed1714589dca}</UniqueIdentifier>
+      <UniqueIdentifier>{c3791779-7cd3-4222-9cd5-3e486bbc20aa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\Scenes">
-      <UniqueIdentifier>{1d5b1379-b368-444a-bee6-b73271bbd6bf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\Scenes\GameMain">
-      <UniqueIdentifier>{44417964-369f-4a34-b10f-05d063cbb686}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\Scenes\GameMain">
-      <UniqueIdentifier>{60a4504f-d72f-430b-80c6-361138ff3ec3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\Particles">
-      <UniqueIdentifier>{15871ed8-e5f6-4356-9b2c-637dc56f8e44}</UniqueIdentifier>
+    <Filter Include="ソース ファイル\Scenes">
+      <UniqueIdentifier>{cb20fe84-a3e3-4d3f-be85-d6a183d2f440}</UniqueIdentifier>
     </Filter>
     <Filter Include="ソース ファイル\Particles">
-      <UniqueIdentifier>{1d998f27-8794-4793-908f-8f351bbd1991}</UniqueIdentifier>
+      <UniqueIdentifier>{0e6f8582-1632-47c9-adc9-585bd11e7441}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Scenes">
+      <UniqueIdentifier>{30139537-b108-4b4d-b241-62ac9711cc5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Particles">
+      <UniqueIdentifier>{7b797a97-7812-4fa2-8e41-b1a308d8ceb9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Scenes\GameMain">
+      <UniqueIdentifier>{eb24a1ce-4573-4c21-95c1-9c1160376e76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Scenes\GameMain">
+      <UniqueIdentifier>{c6307b34-99f8-4d63-aca8-94dbeb4e16bb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Sources\MainController\main.cpp">
+      <Filter>ソース ファイル\MainController</Filter>
+    </ClCompile>
     <ClCompile Include="Sources\MainController\GameData.cpp">
       <Filter>ソース ファイル\MainController</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\MainController\main.cpp">
+    <ClCompile Include="Sources\MainController\InputController.cpp">
       <Filter>ソース ファイル\MainController</Filter>
     </ClCompile>
     <ClCompile Include="Sources\MainController\SceneController.cpp">
       <Filter>ソース ファイル\MainController</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\Scenes\Title.cpp">
-      <Filter>ソース ファイル\Scenes</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\MainController\InputController.cpp">
-      <Filter>ソース ファイル\MainController</Filter>
-    </ClCompile>
     <ClCompile Include="Sources\MainController\TimeManager.cpp">
       <Filter>ソース ファイル\MainController</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Particles\EvalutionText.cpp">
+      <Filter>ソース ファイル\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Particles\VirtualParticle.cpp">
+      <Filter>ソース ファイル\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Scenes\GameMain.cpp">
+      <Filter>ソース ファイル\Scenes</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Scenes\StageSelect.cpp">
       <Filter>ソース ファイル\Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\Scenes\GameMain.cpp">
+    <ClCompile Include="Sources\Scenes\Title.cpp">
       <Filter>ソース ファイル\Scenes</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Scenes\VirtualScene.cpp">
       <Filter>ソース ファイル\Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="Sources\Scenes\GameMain\LongNotes.cpp">
+      <Filter>ソース ファイル\Scenes\GameMain</Filter>
+    </ClCompile>
     <ClCompile Include="Sources\Scenes\GameMain\Notes.cpp">
       <Filter>ソース ファイル\Scenes\GameMain</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\Particles\VirtualParticle.cpp">
-      <Filter>ソース ファイル\Particles</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Particles\EvalutionText.cpp">
-      <Filter>ソース ファイル\Particles</Filter>
-    </ClCompile>
     <ClCompile Include="Sources\Scenes\GameMain\PopText.cpp">
+      <Filter>ソース ファイル\Scenes\GameMain</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Scenes\GameMain\RepeatedNotes.cpp">
       <Filter>ソース ファイル\Scenes\GameMain</Filter>
     </ClCompile>
   </ItemGroup>
@@ -83,8 +89,26 @@
     <ClInclude Include="Sources\MainController\GameData.h">
       <Filter>ヘッダー ファイル\MainController</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\MainController\InputController.h">
+      <Filter>ヘッダー ファイル\MainController</Filter>
+    </ClInclude>
     <ClInclude Include="Sources\MainController\SceneController.h">
       <Filter>ヘッダー ファイル\MainController</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\MainController\TimeManager.h">
+      <Filter>ヘッダー ファイル\MainController</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Particles\EvalutionText.h">
+      <Filter>ヘッダー ファイル\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Particles\VirtualParticle.h">
+      <Filter>ヘッダー ファイル\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Scenes\GameMain.h">
+      <Filter>ヘッダー ファイル\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Scenes\StageSelect.h">
+      <Filter>ヘッダー ファイル\Scenes</Filter>
     </ClInclude>
     <ClInclude Include="Sources\Scenes\Title.h">
       <Filter>ヘッダー ファイル\Scenes</Filter>
@@ -92,28 +116,16 @@
     <ClInclude Include="Sources\Scenes\VirtualScene.h">
       <Filter>ヘッダー ファイル\Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\MainController\InputController.h">
-      <Filter>ヘッダー ファイル\MainController</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\MainController\TimeManager.h">
-      <Filter>ヘッダー ファイル\MainController</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\Scenes\StageSelect.h">
-      <Filter>ヘッダー ファイル\Scenes</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\Scenes\GameMain.h">
-      <Filter>ヘッダー ファイル\Scenes</Filter>
+    <ClInclude Include="Sources\Scenes\GameMain\LongNotes.h">
+      <Filter>ヘッダー ファイル\Scenes\GameMain</Filter>
     </ClInclude>
     <ClInclude Include="Sources\Scenes\GameMain\Notes.h">
       <Filter>ヘッダー ファイル\Scenes\GameMain</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\Particles\VirtualParticle.h">
-      <Filter>ヘッダー ファイル\Particles</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\Particles\EvalutionText.h">
-      <Filter>ヘッダー ファイル\Particles</Filter>
-    </ClInclude>
     <ClInclude Include="Sources\Scenes\GameMain\PopText.h">
+      <Filter>ヘッダー ファイル\Scenes\GameMain</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Scenes\GameMain\RepeatedNotes.h">
       <Filter>ヘッダー ファイル\Scenes\GameMain</Filter>
     </ClInclude>
   </ItemGroup>

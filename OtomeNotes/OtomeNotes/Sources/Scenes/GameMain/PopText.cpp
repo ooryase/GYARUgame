@@ -2,7 +2,8 @@
 #include"DxLib.h"
 #include<iostream>
 
-PopText::PopText(char* _text, int _x, int _y)
+PopText::PopText(char* _text, int _x, int _y, int _color) :
+	color(_color)
 {
 	std::memset(text, 0, sizeof(text));
 	text[0] = _text[0];
@@ -26,7 +27,7 @@ void PopText::Update(int deltaTime)
 
 void PopText::Draw(int fontHandle) const
 {
-	DrawStringToHandle(x, y, text, GetColor(255, 255, 255), fontHandle);
+	DrawStringToHandle(x, y, text, color, fontHandle);
 }
 
 bool PopText::Dead()
