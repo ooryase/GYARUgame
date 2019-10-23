@@ -3,8 +3,6 @@
 #include <algorithm>
 
 #include"GameMain.h"
-#include"../Particles/EvalutionText.h"
-
 
 GameMain::GameMain() : VirtualScene(),
 	modelHandle(Live2D_LoadModel("Assets/Live2d/Hiyori/Hiyori.model3.json")),
@@ -26,9 +24,15 @@ GameMain::GameMain() : VirtualScene(),
 
 	waitTime = 0;
 
+	int x, y, c;
+	GetScreenState(&x, &y, &c);
+
 	textX = 200;
 	textY = 600;
 
+	notesX = x - 250;
+	notesY = y - 120;
+	
 	score = 0;
 
 	printfDx("%d",modelHandle);
@@ -76,10 +80,12 @@ void GameMain::Update()
 			case Notes::EvalutionType::GOOD:
 				score += 1000;
 				particles.push_back(std::make_shared<EvalutionText>(800, 680, fontHandle, "GOOD", GetColor(255, 205, 100)));
+				particles.push_back(std::make_shared<NotesButton>(notesX, notesY, buttonHandle));
 				break;
 			case Notes::EvalutionType::PERFECT:
 				score += 2000;
 				particles.push_back(std::make_shared<EvalutionText>(800, 680, fontHandle, "PERFECT", GetColor(255, 255, 155)));
+				particles.push_back(std::make_shared<NotesButton>(notesX, notesY, buttonHandle));
 				break;
 			case Notes::EvalutionType::BAD:
 				score += 50;
@@ -133,12 +139,10 @@ void GameMain::Draw() const
 		var->Draw(fontHandle);
 	}
 
-	int centerX = x - 300;
-	int centerY = y - 120;
-	DrawExtendGraph(centerX - 70, centerY - 70, centerX + 70, centerY + 70, buttonHandle, TRUE);
+	DrawExtendGraph(notesX - 70, notesY - 70, notesX + 70, notesY + 70, buttonHandle, TRUE);
 	for (auto&& var : notes)
 	{
-		var->Draw(centerX,centerY);
+		var->Draw(notesX,notesY);
 	}
 
 	for (auto&& var : particles)

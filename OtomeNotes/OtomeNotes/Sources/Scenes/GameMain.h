@@ -6,6 +6,8 @@
 #include"GameMain/PopText.h"
 #include"../MainController/TimeManager.h"
 #include"../Particles/VirtualParticle.h"
+#include"../Particles/EvalutionText.h"
+#include"../Particles/NotesButton.h"
 
 class GameMain : public VirtualScene
 {
@@ -24,7 +26,8 @@ private:
 	int waitTime;
 	char readText[256];
 	//char popText[2];
-	int textX, textY;
+	int textX, textY; //テキストの1文字目の座標
+	int notesX, notesY; //ノーツの座標
 
 	std::vector<std::shared_ptr<PopText>> popText;
 	std::vector<std::shared_ptr<Notes>> notes;

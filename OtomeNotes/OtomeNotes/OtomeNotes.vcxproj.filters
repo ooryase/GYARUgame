@@ -84,6 +84,9 @@
     <ClCompile Include="Sources\Scenes\GameMain\RepeatedNotes.cpp">
       <Filter>ソース ファイル\Scenes\GameMain</Filter>
     </ClCompile>
+    <ClCompile Include="Sources\Particles\NotesButton.cpp">
+      <Filter>ソース ファイル\Particles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sources\MainController\GameData.h">
@@ -127,6 +130,9 @@
     </ClInclude>
     <ClInclude Include="Sources\Scenes\GameMain\RepeatedNotes.h">
       <Filter>ヘッダー ファイル\Scenes\GameMain</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Particles\NotesButton.h">
+      <Filter>ヘッダー ファイル\Particles</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
