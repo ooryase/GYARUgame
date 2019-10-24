@@ -22,7 +22,11 @@ void LongNotes::Update(int deltaTime)
 		Evalution = (Evalution == EvalutionType::DEFAULT) ? EvalutionType::BAD : Evalution;
 	}
 
-	Dead = !push && (time > popToJustTime + 500);
+	if (!push && (time > popToJustTime + 500))
+	{
+		Dead = true;
+		Evalution = EvalutionType::BAD;
+	}
 
 }
 
@@ -33,18 +37,18 @@ void LongNotes::Draw(int centerX, int centerY) const
 
 	if (time < popToJustTime)
 	{
-		DrawExtendGraph(centerX - 70, centerY - 240, centerX + 70, centerY - rateS * 3, longNotesHandle[1], TRUE);
-		DrawExtendGraph(centerX - 70, centerY - rateS * 3, centerX + 70, centerY - rateS * 3 + 70, longNotesHandle[2], TRUE);
+		DrawExtendGraph(centerX - 70, centerY - 400, centerX + 70, centerY - rateS * 5, longNotesHandle[1], TRUE);
+		DrawExtendGraph(centerX - 70, centerY - rateS * 5, centerX + 70, centerY - rateS * 5 + 70, longNotesHandle[2], TRUE);
 	}
 	else if (time < releaseTime)
 	{
-		DrawExtendGraph(centerX - 70, centerY - 240, centerX + 70, centerY, longNotesHandle[1], TRUE);
+		DrawExtendGraph(centerX - 70, centerY - 400, centerX + 70, centerY, longNotesHandle[1], TRUE);
 		DrawExtendGraph(centerX - 70, centerY, centerX + 70, centerY + 70, longNotesHandle[2], TRUE);
 	}
 	else if (time < releaseTime + popToJustTime)
 	{
-		DrawExtendGraph(centerX - 70, centerY - rateE * 3 - 70, centerX + 70, centerY - rateE * 3, longNotesHandle[0], TRUE);
-		DrawExtendGraph(centerX - 70, centerY - rateE * 3, centerX + 70, centerY, longNotesHandle[1], TRUE);
+		DrawExtendGraph(centerX - 70, centerY - rateE * 5 - 70, centerX + 70, centerY - rateE * 5, longNotesHandle[0], TRUE);
+		DrawExtendGraph(centerX - 70, centerY - rateE * 5, centerX + 70, centerY, longNotesHandle[1], TRUE);
 		DrawExtendGraph(centerX - 70, centerY, centerX + 70, centerY + 70, longNotesHandle[2], TRUE);
 	}
 

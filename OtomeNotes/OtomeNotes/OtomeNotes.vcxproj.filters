@@ -87,6 +87,9 @@
     <ClCompile Include="Sources\Particles\NotesButton.cpp">
       <Filter>ソース ファイル\Particles</Filter>
     </ClCompile>
+    <ClCompile Include="Sources\Particles\Krkr.cpp">
+      <Filter>ソース ファイル\Particles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sources\MainController\GameData.h">
@@ -132,6 +135,9 @@
       <Filter>ヘッダー ファイル\Scenes\GameMain</Filter>
     </ClInclude>
     <ClInclude Include="Sources\Particles\NotesButton.h">
+      <Filter>ヘッダー ファイル\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Particles\Krkr.h">
       <Filter>ヘッダー ファイル\Particles</Filter>
     </ClInclude>
   </ItemGroup>

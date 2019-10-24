@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include"GameMain.h"
+#include"../MainController/InputController.h"
 
 GameMain::GameMain() : VirtualScene(),
 	modelHandle(Live2D_LoadModel("Assets/Live2d/Hiyori/Hiyori.model3.json")),
@@ -21,6 +22,8 @@ GameMain::GameMain() : VirtualScene(),
 	int i = GraphFilterBlt(notesHandle[0],notesHandle[1], DX_GRAPH_FILTER_HSB,0,90,0,0);
 	int j = GraphFilterBlt(notesHandle[0],notesHandle[2], DX_GRAPH_FILTER_HSB,0,60,0,0);
 	LoadDivGraph("Assets/Textures/GameMain/LongNotes.png",3,1,3,200,100,LongNotesHandle);
+	LoadDivGraph("Assets/Textures/GameMain/FullTexture.png", 3, 1, 3, 640, 360, fullTextHandle);
+	krkrHandle = LoadGraph("Assets/Textures/Particles/Star.png");
 
 	waitTime = 0;
 	popToJustTime = 1200;
@@ -36,9 +39,12 @@ GameMain::GameMain() : VirtualScene(),
 	notesY = y - 120;
 	
 	score = 0;
+	scoreCount[0] = scoreCount[1] = scoreCount[2] = 0;
 
 	printfDx("%d\n",modelHandle);
 	Live2D_Model_SetExtendRate(modelHandle, 0.6f,0.6f);
+
+	phase = PhaseType::START;
 
 	time->TimeUpdate();
 }
@@ -62,59 +68,86 @@ void GameMain::Update()
 {
 	time->TimeUpdate();
 
+	switch (phase)
+	{
+	case GameMain::PhaseType::START:
+		StartUpdate();
+		break;
+	case GameMain::PhaseType::MAIN:
+		MainUpdate();
+		break;
+	case GameMain::PhaseType::RESULT:
+		ResultUpdate();
+		break;
+	}
+}
+
+void GameMain::StartUpdate()
+{
+	if (InputController::getInstance().GetPush(KEY_INPUT_Z))
+	{
+		phase = PhaseType::MAIN;
+	}
+}
+
+void GameMain::MainUpdate()
+{
+
 	CSVRead();
 
-	for (auto&& var : popText)
+	if (FileRead_eof(fileHandle))
 	{
-		var->Update(time->GetDeltaTime());
+		time->Reset();
+		phase = PhaseType::RESULT;
 	}
 
-	for (auto&& var : notes)
-	{
+	for (auto&& var : popText)
 		var->Update(time->GetDeltaTime());
-	}
+
+	for (auto&& var : notes)
+		var->Update(time->GetDeltaTime());
 
 	for (auto&& var : notes)
 	{
 		if (var->Evalution != Notes::EvalutionType::DEFAULT)
 		{
+			scoreCount[var->Evalution]++;
 			PlaySoundMem(SE_notesHandle, DX_PLAYTYPE_BACK);
 			switch (var->Evalution)
 			{
 			case Notes::EvalutionType::GOOD:
-				score += 1000;
+				score += 100;
 				particles.push_back(std::make_shared<EvalutionText>(800, 680, fontHandle, "GOOD", GetColor(255, 205, 100)));
 				particles.push_back(std::make_shared<NotesButton>(notesX, notesY, buttonHandle));
+				particles.push_back(std::make_shared<Krkr>(notesX, notesY, krkrHandle, 0));
 				break;
 			case Notes::EvalutionType::PERFECT:
-				score += 2000;
+				score += 200;
 				particles.push_back(std::make_shared<EvalutionText>(800, 680, fontHandle, "PERFECT", GetColor(255, 255, 155)));
 				particles.push_back(std::make_shared<NotesButton>(notesX, notesY, buttonHandle));
+				particles.push_back(std::make_shared<Krkr>(notesX, notesY, krkrHandle, 0));
 				break;
 			case Notes::EvalutionType::BAD:
-				score += 50;
+				score -= 100;
 				particles.push_back(std::make_shared<EvalutionText>(800, 680, fontHandle, "BAD", GetColor(205, 185, 235)));
+				particles.push_back(std::make_shared<NotesButton>(notesX, notesY, buttonHandle));
 				break;
 			}
 			var->Push();
 		}
 	}
 
-
 	auto it =
 		std::remove_if(notes.begin(), notes.end(), [](
 			std::shared_ptr<Notes>am) {return  am->Dead; });
-
 	notes.erase(it, notes.end());
 
 	for (auto&& var : particles)
-	{
 		var->Update(time->GetDeltaTime());
-	}
+
 	auto itr =
 		std::remove_if(particles.begin(), particles.end(), [](
 			std::shared_ptr<VirtualParticle>am) {return  am->Dead; });
-
 	particles.erase(itr, particles.end());
 
 	// モーション再生が終了していたらアイドリングモーションをランダムで再生
@@ -125,34 +158,71 @@ void GameMain::Update()
 
 	// モデルの状態を60分の1秒分進める
 	Live2D_Model_Update(modelHandle, time->GetDeltaTime() / 1000.0f);
+
+}
+
+void GameMain::ResultUpdate()
+{
+	// モーション再生が終了していたらアイドリングモーションをランダムで再生
+	if (Live2D_Model_IsMotionFinished(modelHandle) == TRUE)
+	{
+		Live2D_Model_StartMotion(modelHandle, "Idle", GetRand(8));
+	}
+
+	// モデルの状態を60分の1秒分進める
+	Live2D_Model_Update(modelHandle, time->GetDeltaTime() / 1000.0f);
+
 }
 
 void GameMain::Draw() const
 {
+	switch (phase)
+	{
+	case GameMain::PhaseType::START:
+		StartDraw();
+		break;
+	case GameMain::PhaseType::MAIN:
+		MainDraw();
+		break;
+	case GameMain::PhaseType::RESULT:
+		ResultDraw();
+		break;
+	}
+}
+
+void GameMain::StartDraw() const
+{
 	int x, y, c;
 	GetScreenState(&x, &y, &c);
 
+	DrawExtendGraph(0, 0, x, y, fullTextHandle[1], FALSE);
+
+	if (time->GetTimeCount() < 1020)
+	{
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - time->GetTimeCount() / 4);
+		DrawExtendGraph(0, 0, x, y, fullTextHandle[0], FALSE);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	}
+}
+
+void GameMain::MainDraw() const
+{
+	int x, y, c;
+	GetScreenState(&x, &y, &c);
 
 	DrawExtendGraph(0, 0, x, y, roomHandle, FALSE);
 	DrawExtendGraph(x / 2 - 153, 100, x / 2 + 153, 100 + 616, osakabechankariHandle, TRUE);
 	DrawExtendGraph(50, y - 300, x - 50, y, textFrameHandle, TRUE);
 
-
 	for (auto&& var : popText)
-	{
 		var->Draw(fontHandle);
-	}
 
 	DrawExtendGraph(notesX - 70, notesY - 70, notesX + 70, notesY + 70, buttonHandle, TRUE);
 	for (auto&& var : notes)
-	{
-		var->Draw(notesX,notesY);
-	}
+		var->Draw(notesX, notesY);
 
 	for (auto&& var : particles)
-	{
 		var->Draw();
-	}
 
 	// Live2D描画の開始
 	Live2D_RenderBegin();
@@ -162,6 +232,47 @@ void GameMain::Draw() const
 
 	// Live2D描画の終了
 	Live2D_RenderEnd();
+
+}
+
+void GameMain::ResultDraw() const
+{
+	int x, y, c;
+	GetScreenState(&x, &y, &c);
+
+	if (time->GetTimeCount() < x / 2)
+	{
+		DrawExtendGraph(0, 0, x, y, roomHandle, FALSE);
+		DrawExtendGraph(-x + time->GetTimeCount() * 2, 0, time->GetTimeCount() * 2, y, fullTextHandle[2], FALSE);
+	}
+	else
+		DrawExtendGraph(0,0, x, y, fullTextHandle[2], FALSE);
+
+	DrawExtendGraph(x / 2 - 153, 100, x / 2 + 153, 100 + 616, osakabechankariHandle, TRUE);
+	if (time->GetTimeCount() < x / 2)
+	{
+		DrawExtendGraph(50 + time->GetTimeCount() * 2, y - 300, x - 50 + time->GetTimeCount() * 2, y, textFrameHandle, TRUE);
+	}
+
+	for (auto&& var : popText)
+		var->Draw(fontHandle);
+
+	DrawExtendGraph(notesX - 70, notesY - 70, notesX + 70, notesY + 70, buttonHandle, TRUE);
+	for (auto&& var : notes)
+		var->Draw(notesX, notesY);
+
+	for (auto&& var : particles)
+		var->Draw();
+
+	// Live2D描画の開始
+	Live2D_RenderBegin();
+
+	// モデルの描画
+	Live2D_Model_Draw(modelHandle);
+
+	// Live2D描画の終了
+	Live2D_RenderEnd();
+
 }
 
 void GameMain::CSVRead()
@@ -238,6 +349,20 @@ void GameMain::QueueRead()
 	textQueueWaitTime += (text[4] - '0') * 100;
 	textQueueWaitTime += (text[5] - '0') * 10;
 	textQueueWaitTime += text[6] - '0';
+}
+
+template <typename T> void GameMain::UpdateAndDelete(std::vector<T>&& t, int deltaTime)
+{
+	for (auto var : t)
+	{
+		var->Update(deltaTime);
+	}
+
+	auto it =
+		std::remove_if(t.begin(), t.end(), [](
+			T am) {return  am->Dead; });
+
+	t.erase(it, t.end());
 }
 
 GameMain::CharClass::CharClass(char* _text)

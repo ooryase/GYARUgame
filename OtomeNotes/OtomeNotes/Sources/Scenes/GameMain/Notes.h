@@ -6,7 +6,7 @@ protected:
 	const int notesHandle;
 
 public:
-	enum class EvalutionType
+	enum EvalutionType
 	{
 		PERFECT,
 		GOOD,

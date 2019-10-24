@@ -21,11 +21,21 @@ void Notes::Update(int deltaTime)
 		Evalution = NotesEvalution(time - popToJustTime);
 	}
 	
-	Dead = (time > popToJustTime + 300);
+	if (time > popToJustTime + 300)
+	{
+		Dead = true;
+		Evalution = EvalutionType::BAD;
+	}
 }
 
 void Notes::Draw(int centerX,int centerY) const
 {
+	int rateS = static_cast<int>(80.0 * (1.0 - time / static_cast<double>(popToJustTime)));
+
+	DrawExtendGraph(centerX - 70, centerY - 70 - rateS * 5, centerX + 70, centerY  + 70 - rateS * 5, notesHandle, TRUE);
+
+
+
 	int rate = static_cast<int>(80.0 * (1.0 - time / static_cast<double>(popToJustTime)));
 	DrawExtendGraph(centerX - 70 - rate, centerY - 70 - rate, centerX + 70 + rate, centerY + 70 + rate, notesHandle, TRUE);
 
