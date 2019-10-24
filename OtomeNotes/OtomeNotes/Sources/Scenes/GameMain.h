@@ -25,6 +25,7 @@ private:
 	const int roomHandle;
 	const int textFrameHandle;
 	const int SE_notesHandle;
+	int bgmHandle;
 	int fullTextHandle[3];
 	int krkrHandle;
 
@@ -48,6 +49,9 @@ private:
 	//スコア管理
 	int score;
 	int scoreCount[3];
+
+	//リザルト用変数
+	int scorePopCount;
 
 	//フェーズ管理
 	enum class PhaseType

@@ -22,6 +22,7 @@ GameMain::GameMain() : VirtualScene(),
 	int i = GraphFilterBlt(notesHandle[0],notesHandle[1], DX_GRAPH_FILTER_HSB,0,90,0,0);
 	int j = GraphFilterBlt(notesHandle[0],notesHandle[2], DX_GRAPH_FILTER_HSB,0,60,0,0);
 	LoadDivGraph("Assets/Textures/GameMain/LongNotes.png",3,1,3,200,100,LongNotesHandle);
+	bgmHandle = LoadSoundMem("Assets/Sounds/BGM/Himeka.wav");
 	LoadDivGraph("Assets/Textures/GameMain/FullTexture.png", 3, 1, 3, 640, 360, fullTextHandle);
 	krkrHandle = LoadGraph("Assets/Textures/Particles/Star.png");
 
@@ -45,6 +46,8 @@ GameMain::GameMain() : VirtualScene(),
 	Live2D_Model_SetExtendRate(modelHandle, 0.6f,0.6f);
 
 	phase = PhaseType::START;
+
+	scorePopCount = 0;
 
 	time->TimeUpdate();
 }
@@ -87,6 +90,8 @@ void GameMain::StartUpdate()
 	if (InputController::getInstance().GetPush(KEY_INPUT_Z))
 	{
 		phase = PhaseType::MAIN;
+		//PlaySoundMem(bgmHandle, DX_PLAYTYPE_BACK);
+		time->Reset();
 	}
 }
 
@@ -95,7 +100,7 @@ void GameMain::MainUpdate()
 
 	CSVRead();
 
-	if (FileRead_eof(fileHandle))
+	if (FileRead_eof(fileHandle) || InputController::getInstance().GetPush(KEY_INPUT_BACK))
 	{
 		time->Reset();
 		phase = PhaseType::RESULT;
@@ -163,6 +168,20 @@ void GameMain::MainUpdate()
 
 void GameMain::ResultUpdate()
 {
+	if (time->GetTimeCount() > 1000 + scorePopCount * 600 && scorePopCount < 3)
+	{
+		particles.push_back(std::make_shared<Krkr>(200, 150 + scorePopCount * 60, krkrHandle, 120));
+		scorePopCount++;
+	}
+
+	for (auto&& var : particles)
+		var->Update(time->GetDeltaTime());
+
+	auto itr =
+		std::remove_if(particles.begin(), particles.end(), [](
+			std::shared_ptr<VirtualParticle>am) {return  am->Dead; });
+	particles.erase(itr, particles.end());
+
 	// モーション再生が終了していたらアイドリングモーションをランダムで再生
 	if (Live2D_Model_IsMotionFinished(modelHandle) == TRUE)
 	{
@@ -254,12 +273,15 @@ void GameMain::ResultDraw() const
 		DrawExtendGraph(50 + time->GetTimeCount() * 2, y - 300, x - 50 + time->GetTimeCount() * 2, y, textFrameHandle, TRUE);
 	}
 
-	for (auto&& var : popText)
-		var->Draw(fontHandle);
+	if(time->GetTimeCount() > 1200)
+		DrawStringToHandle(150, 150, "PERFECT", GetColor(255, 205, 100), fontHandle);
 
-	DrawExtendGraph(notesX - 70, notesY - 70, notesX + 70, notesY + 70, buttonHandle, TRUE);
-	for (auto&& var : notes)
-		var->Draw(notesX, notesY);
+	if (time->GetTimeCount() > 1800)
+		DrawStringToHandle(150, 210, "GOOD", GetColor(255, 255, 155), fontHandle);
+
+	if (time->GetTimeCount() > 2400)
+		DrawStringToHandle(150, 270, "BAD", GetColor(205, 185, 235), fontHandle);
+
 
 	for (auto&& var : particles)
 		var->Draw();
