@@ -23,6 +23,8 @@ GameMain::GameMain() : VirtualScene(),
 	LoadDivGraph("Assets/Textures/GameMain/LongNotes.png",3,1,3,200,100,LongNotesHandle);
 
 	waitTime = 0;
+	popToJustTime = 1200;
+	textQueueWaitTime = popToJustTime - 200;
 
 	int x, y, c;
 	GetScreenState(&x, &y, &c);
@@ -35,8 +37,10 @@ GameMain::GameMain() : VirtualScene(),
 	
 	score = 0;
 
-	printfDx("%d",modelHandle);
+	printfDx("%d\n",modelHandle);
 	Live2D_Model_SetExtendRate(modelHandle, 0.6f,0.6f);
+
+	time->TimeUpdate();
 }
 
 GameMain::~GameMain()
@@ -58,7 +62,7 @@ void GameMain::Update()
 {
 	time->TimeUpdate();
 
-	TextRead();
+	CSVRead();
 
 	for (auto&& var : popText)
 	{
@@ -160,44 +164,17 @@ void GameMain::Draw() const
 	Live2D_RenderEnd();
 }
 
-void GameMain::TextRead()
+void GameMain::CSVRead()
 {
 	if (waitTime <= 0 && !FileRead_eof(fileHandle))
 	{
 		FileRead_gets(readText, 256, fileHandle);
 
-		if (readText[8] == 'C')
-		{
-			popText.clear();
-			textX = 200;
-			textY = 600;
-		}
-		else if (readText[8] == 'E')
-		{
-			textX = 200;
-			textY += 50;
-		}
+		waitTextQueue.push(CharClass(readText));
 
-		printfDx("%s\n",readText);
 		if (readText[0] == 'N')
 		{
-			if (readText[1] == 'N')
-				notes.push_back(std::make_shared<Notes>(notesHandle[0]));
-			else if (readText[1] == 'L')
-				notes.push_back(std::make_shared<LongNotes>(notesHandle[1],
-				(readText[10] - '0') * 1000 + (readText[11] - '0') * 100 + (readText[12] - '0') * 10 + (readText[13] - '0'),
-					LongNotesHandle));
-			else if (readText[1] == 'R')
-				notes.push_back(std::make_shared<RepeatedNotes>(notesHandle[2],
-					(readText[10] - '0') * 1000 + (readText[11] - '0') * 100 + (readText[12] - '0') * 10 + (readText[13] - '0'),
-					LongNotesHandle));
-		}
-		else
-		{
-			popText.push_back(std::make_unique<PopText>(readText, textX, textY, GetColor(255, 255, 255)));
-			textX += 30;
-			//popText[0] = readText[0];
-			//popText[1] = readText[1];
+			NotesPush(readText[1]);
 		}
 
 		waitTime += (readText[3] - '0') * 1000;
@@ -207,4 +184,63 @@ void GameMain::TextRead()
 	}
 
 	waitTime -= time->GetDeltaTime();
+
+	if (textQueueWaitTime <= 0)
+	{
+		QueueRead();
+	}
+
+	textQueueWaitTime -= time->GetDeltaTime();
+}
+
+void GameMain::NotesPush(char _notesType)
+{
+	if (readText[1] == 'N')
+		notes.push_back(std::make_shared<Notes>(notesHandle[0]));
+	else if (readText[1] == 'L')
+		notes.push_back(std::make_shared<LongNotes>(notesHandle[1],
+		(readText[10] - '0') * 1000 + (readText[11] - '0') * 100 + (readText[12] - '0') * 10 + (readText[13] - '0'),
+			LongNotesHandle));
+	else if (readText[1] == 'R')
+		notes.push_back(std::make_shared<RepeatedNotes>(notesHandle[2],
+		(readText[10] - '0') * 1000 + (readText[11] - '0') * 100 + (readText[12] - '0') * 10 + (readText[13] - '0'),
+			LongNotesHandle));
+}
+
+void GameMain::QueueRead()
+{
+	if (waitTextQueue.empty())
+		return;
+
+	auto text = waitTextQueue.front().Text;
+
+	waitTextQueue.pop();
+
+	if (text[8] == 'C')
+	{
+		popText.clear();
+		textX = 200;
+		textY = 600;
+	}
+	else if (text[8] == 'E')
+	{
+		textX = 200;
+		textY += 50;
+	}
+
+	if (text[0] != 'N')
+	{
+		popText.push_back(std::make_unique<PopText>(text, textX, textY, GetColor(255, 255, 255)));
+		textX += 30;
+	}
+
+	textQueueWaitTime += (text[3] - '0') * 1000;
+	textQueueWaitTime += (text[4] - '0') * 100;
+	textQueueWaitTime += (text[5] - '0') * 10;
+	textQueueWaitTime += text[6] - '0';
+}
+
+GameMain::CharClass::CharClass(char* _text)
+{
+	memcpy(Text, _text, sizeof(Text));
 }
