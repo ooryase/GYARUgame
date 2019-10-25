@@ -7,7 +7,7 @@
 
 SceneController::SceneController()
 {
-	currentScene = std::make_shared<GameMain>();
+	currentScene = std::make_shared<Title>();
 
 	InputController::getInstance().Init();
 }

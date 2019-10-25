@@ -16,13 +16,13 @@ class GameMain : public VirtualScene
 private:
 	//ロードハンドル
 	const int modelHandle;
-	const int fileHandle;
+	int fileHandle;
 	const int fontHandle;
 	const int buttonHandle;
 	int notesHandle[3];
 	int LongNotesHandle[3];
-	const int osakabechankariHandle;
-	const int roomHandle;
+	int charaHandle;
+	int backGroundHandle[3];
 	const int textFrameHandle;
 	const int SE_notesHandle;
 	int bgmHandle;
@@ -40,6 +40,9 @@ private:
 	//ノーツ描画管理
 	int textX, textY; //テキストの1文字目の座標
 	int notesX, notesY; //ノーツの座標
+
+	//背景管理
+	int backGroundStep;
 
 	//配列管理
 	std::vector<std::shared_ptr<PopText>> popText;
@@ -70,6 +73,8 @@ public:
 	void Draw() const;
 
 private:
+	void LoadSelectChara();
+
 	void StartUpdate();
 	void MainUpdate();
 	void ResultUpdate();

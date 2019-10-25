@@ -4,6 +4,7 @@
 
 #include"GameMain.h"
 #include"../MainController/InputController.h"
+#include"../MainController/GameData.h"
 
 GameMain::GameMain() : VirtualScene(),
 	modelHandle(Live2D_LoadModel("Assets/Live2d/Hiyori/Hiyori.model3.json")),
@@ -11,8 +12,7 @@ GameMain::GameMain() : VirtualScene(),
 	fontHandle(LoadFontDataToHandle("Assets/Fonts/Senobi_m.dft",1)),
 	buttonHandle(LoadGraph("Assets/Textures/GameMain/Button.png")),
 	//notesHandle(LoadGraph("Assets/Textures/GameMain/Notes.png")),
-	osakabechankariHandle(LoadGraph("Assets/Textures/GameMain/Osakabechankari.png")),
-	roomHandle(LoadGraph("Assets/Textures/GameMain/room.jpg")),
+	//osakabechankariHandle(LoadGraph("Assets/Textures/GameMain/Osakabechankari.png")),
 	textFrameHandle(LoadGraph("Assets/Textures/GameMain/TextFrame.png")),
 	SE_notesHandle(LoadSoundMem("Assets/Sounds/SE/Notes.mp3"))
 {
@@ -26,9 +26,13 @@ GameMain::GameMain() : VirtualScene(),
 	LoadDivGraph("Assets/Textures/GameMain/FullTexture.png", 3, 1, 3, 640, 360, fullTextHandle);
 	krkrHandle = LoadGraph("Assets/Textures/Particles/Star.png");
 
+	LoadSelectChara();
+
 	waitTime = 0;
 	popToJustTime = 1200;
 	textQueueWaitTime = popToJustTime - 200;
+
+	backGroundStep = 0;
 
 	int x, y, c;
 	GetScreenState(&x, &y, &c);
@@ -61,8 +65,10 @@ GameMain::~GameMain()
 	DeleteGraph(notesHandle[0]);
 	DeleteGraph(notesHandle[1]);
 	DeleteGraph(notesHandle[2]);
-	DeleteGraph(osakabechankariHandle);
-	DeleteGraph(roomHandle);
+	DeleteGraph(charaHandle);
+	DeleteGraph(backGroundHandle[0]);
+	DeleteGraph(backGroundHandle[1]);
+	DeleteGraph(backGroundHandle[2]);
 	DeleteGraph(textFrameHandle);
 }
 
@@ -87,10 +93,10 @@ void GameMain::Update()
 
 void GameMain::StartUpdate()
 {
-	if (InputController::getInstance().GetPush(KEY_INPUT_Z))
+	if (time->GetTimeCount() > 1000)
 	{
 		phase = PhaseType::MAIN;
-		//PlaySoundMem(bgmHandle, DX_PLAYTYPE_BACK);
+		PlaySoundMem(bgmHandle, DX_PLAYTYPE_BACK);
 		time->Reset();
 	}
 }
@@ -214,7 +220,18 @@ void GameMain::StartDraw() const
 	int x, y, c;
 	GetScreenState(&x, &y, &c);
 
-	DrawExtendGraph(0, 0, x, y, fullTextHandle[1], FALSE);
+	DrawExtendGraph(0, 0, x, y, backGroundHandle[backGroundStep], FALSE);
+	DrawExtendGraph(x / 2 - 153, 100, x / 2 + 153, 100 + 616, charaHandle, TRUE);
+	DrawExtendGraph(50, y - 300, x - 50, y, textFrameHandle, TRUE);
+
+	// Live2Dï`âÊÇÃäJén
+	Live2D_RenderBegin();
+
+	// ÉÇÉfÉãÇÃï`âÊ
+	Live2D_Model_Draw(modelHandle);
+
+	// Live2Dï`âÊÇÃèIóπ
+	Live2D_RenderEnd();
 
 	if (time->GetTimeCount() < 1020)
 	{
@@ -222,6 +239,8 @@ void GameMain::StartDraw() const
 		DrawExtendGraph(0, 0, x, y, fullTextHandle[0], FALSE);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
+
+
 }
 
 void GameMain::MainDraw() const
@@ -229,8 +248,8 @@ void GameMain::MainDraw() const
 	int x, y, c;
 	GetScreenState(&x, &y, &c);
 
-	DrawExtendGraph(0, 0, x, y, roomHandle, FALSE);
-	DrawExtendGraph(x / 2 - 153, 100, x / 2 + 153, 100 + 616, osakabechankariHandle, TRUE);
+	DrawExtendGraph(0, 0, x, y, backGroundHandle[backGroundStep], FALSE);
+	DrawExtendGraph(x / 2 - 153, 100, x / 2 + 153, 100 + 616, charaHandle, TRUE);
 	DrawExtendGraph(50, y - 300, x - 50, y, textFrameHandle, TRUE);
 
 	for (auto&& var : popText)
@@ -261,18 +280,23 @@ void GameMain::ResultDraw() const
 
 	if (time->GetTimeCount() < x / 2)
 	{
-		DrawExtendGraph(0, 0, x, y, roomHandle, FALSE);
+		DrawExtendGraph(0, 0, x, y, backGroundHandle[backGroundStep], FALSE);
 		DrawExtendGraph(-x + time->GetTimeCount() * 2, 0, time->GetTimeCount() * 2, y, fullTextHandle[2], FALSE);
 	}
 	else
 		DrawExtendGraph(0,0, x, y, fullTextHandle[2], FALSE);
 
-	DrawExtendGraph(x / 2 - 153, 100, x / 2 + 153, 100 + 616, osakabechankariHandle, TRUE);
+	DrawExtendGraph(x / 2 - 153, 100, x / 2 + 153, 100 + 616, charaHandle, TRUE);
 	if (time->GetTimeCount() < x / 2)
 	{
 		DrawExtendGraph(50 + time->GetTimeCount() * 2, y - 300, x - 50 + time->GetTimeCount() * 2, y, textFrameHandle, TRUE);
 	}
 
+
+	auto i = static_cast<int>(std::log10(scoreCount[0]));
+	std::string s;
+
+	
 	if(time->GetTimeCount() > 1200)
 		DrawStringToHandle(150, 150, "PERFECT", GetColor(255, 205, 100), fontHandle);
 
@@ -295,6 +319,25 @@ void GameMain::ResultDraw() const
 	// Live2Dï`âÊÇÃèIóπ
 	Live2D_RenderEnd();
 
+}
+
+void GameMain::LoadSelectChara()
+{
+	if (GameData::getInstance().Stage == 0)
+	{
+		charaHandle = LoadGraph("Assets/Textures/GameMain/Osakabechankari.png");
+		LoadDivGraph("Assets/Textures/GameMain/HimekaBackGround.png", 3, 1, 3, 640, 360, backGroundHandle);
+	}
+	else if (GameData::getInstance().Stage == 1)
+	{
+		charaHandle = LoadGraph("Assets/Textures/GameMain/Osakabechankari.png");
+		LoadDivGraph("Assets/Textures/GameMain/HimekaBackGround.png", 3, 1, 3, 640, 360, backGroundHandle);
+	}
+	else if(GameData::getInstance().Stage == 2)
+	{
+		charaHandle = LoadGraph("Assets/Textures/GameMain/Osakabechankari.png");
+		LoadDivGraph("Assets/Textures/GameMain/HimekaBackGround.png", 3, 1, 3, 640, 360, backGroundHandle);
+	}
 }
 
 void GameMain::CSVRead()
@@ -359,6 +402,10 @@ void GameMain::QueueRead()
 	{
 		textX = 200;
 		textY += 50;
+	}
+	else if (text[8] == 'B')
+	{
+		backGroundStep++;
 	}
 
 	if (text[0] != 'N')

@@ -32,6 +32,13 @@ void Title::Update()
 			phase = TitlePhaseList::MOVIE;
 			time->Reset();
 		}
+#if _DEBUG		
+		else if (InputController::getInstance().GetPush(KEY_INPUT_BACK))
+		{
+			phase = TitlePhaseList::NEXT;
+			nextScene = std::make_shared<StageSelect>();
+		}
+#endif
 		break;
 	case TitlePhaseList::MOVIE:
 		if (GetMovieStateToGraph(movieHandle) != 1 || 

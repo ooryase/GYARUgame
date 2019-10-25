@@ -60,14 +60,31 @@ void StageSelect::Update()
 	case StageSelect::DECISION:
 		if (time->GetTimeCount() > 3000)
 		{
-			nextScene = std::make_shared<GameMain>();
 			GameData::getInstance().Stage = selectStage;
+			nextScene = std::make_shared<GameMain>();
 		}
 		break;
 	default:
 		break;
 	}
 
+#if _DEBUG
+	if (InputController::getInstance().GetPush(KEY_INPUT_1))
+	{
+		GameData::getInstance().Stage = 0;
+		nextScene = std::make_shared<GameMain>();
+	}
+	else if (InputController::getInstance().GetPush(KEY_INPUT_2))
+	{
+		GameData::getInstance().Stage = 1;
+		nextScene = std::make_shared<GameMain>();
+	}
+	else if (InputController::getInstance().GetPush(KEY_INPUT_3))
+	{
+		GameData::getInstance().Stage = 2;
+		nextScene = std::make_shared<GameMain>();
+	}
+#endif
 }
 
 void StageSelect::RotateUpdate()
