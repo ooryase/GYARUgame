@@ -134,6 +134,7 @@
     <ClCompile Include="Sources\Particles\NotesButton.cpp" />
     <ClCompile Include="Sources\Particles\VirtualParticle.cpp" />
     <ClCompile Include="Sources\Scenes\GameMain.cpp" />
+    <ClCompile Include="Sources\Scenes\GameMain\Button.cpp" />
     <ClCompile Include="Sources\Scenes\GameMain\LongNotes.cpp" />
     <ClCompile Include="Sources\Scenes\GameMain\Notes.cpp" />
     <ClCompile Include="Sources\Scenes\GameMain\PopText.cpp" />
@@ -152,6 +153,7 @@
     <ClInclude Include="Sources\Particles\NotesButton.h" />
     <ClInclude Include="Sources\Particles\VirtualParticle.h" />
     <ClInclude Include="Sources\Scenes\GameMain.h" />
+    <ClInclude Include="Sources\Scenes\GameMain\Button.h" />
     <ClInclude Include="Sources\Scenes\GameMain\LongNotes.h" />
     <ClInclude Include="Sources\Scenes\GameMain\Notes.h" />
     <ClInclude Include="Sources\Scenes\GameMain\PopText.h" />

@@ -1,11 +1,13 @@
 #include"Notes.h"
 #include"../../MainController/InputController.h"
 
-Notes::Notes(int _notesHandle) :
-	notesHandle(_notesHandle)
+Notes::Notes(int _notesHandle,int _x, int _y) :
+	notesHandle(_notesHandle),
+	x(_x),
+	y(_y)
 {
 	time = 0;
-	popToJustTime = 1000;
+	popToJustTime = 1200;
 	Evalution = EvalutionType::DEFAULT;
 
 	Dead = false;
@@ -28,17 +30,18 @@ void Notes::Update(int deltaTime)
 	}
 }
 
-void Notes::Draw(int centerX,int centerY) const
+void Notes::Draw() const
 {
-	int rateS = static_cast<int>(80.0 * (1.0 - time / static_cast<double>(popToJustTime)));
+	/*int rateS = static_cast<int>(80.0 * (1.0 - time / static_cast<double>(popToJustTime)));
 
-	DrawExtendGraph(centerX - 70, centerY - 70 - rateS * 5, centerX + 70, centerY  + 70 - rateS * 5, notesHandle, TRUE);
+	DrawExtendGraph(x - 50, y - 50 - rateS * 5, x + 50, y  + 50 - rateS * 5, notesHandle, TRUE);
 
 
 
 	int rate = static_cast<int>(80.0 * (1.0 - time / static_cast<double>(popToJustTime)));
-	DrawExtendGraph(centerX - 70 - rate, centerY - 70 - rate, centerX + 70 + rate, centerY + 70 + rate, notesHandle, TRUE);
-
+	DrawExtendGraph(x - 50 - rate, y - 50 - rate, x + 50 + rate, y + 50 + rate, notesHandle, TRUE);
+	*/
+	DrawExtendGraph(x - 50, y - 50, x + 50, y + 50, notesHandle, TRUE);
 
 }
 

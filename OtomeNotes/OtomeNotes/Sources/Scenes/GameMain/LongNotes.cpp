@@ -2,7 +2,7 @@
 #include"../../MainController/InputController.h"
 
 
-LongNotes::LongNotes(int _notesHandle, int _releaseTime,int _longNotesHandle[]) : Notes(_notesHandle)
+LongNotes::LongNotes(int _notesHandle,int _x,int _y, int _releaseTime,int _longNotesHandle[]) : Notes(_notesHandle,_x,_y)
 {
 	memcpy(longNotesHandle, _longNotesHandle, sizeof(longNotesHandle));
 	releaseTime = _releaseTime;
@@ -30,36 +30,42 @@ void LongNotes::Update(int deltaTime)
 
 }
 
-void LongNotes::Draw(int centerX, int centerY) const 
+void LongNotes::Draw() const 
 {
-	int rateS = static_cast<int>(80.0 * (1.0 - time / static_cast<double>(popToJustTime)));
+	/*int rateS = static_cast<int>(80.0 * (1.0 - time / static_cast<double>(popToJustTime)));
 	int rateE = static_cast<int>(80.0 * (1.0 - (time - releaseTime) / static_cast<double>(popToJustTime)));
 
 	if (time < popToJustTime)
 	{
-		DrawExtendGraph(centerX - 70, centerY - 400, centerX + 70, centerY - rateS * 5, longNotesHandle[1], TRUE);
-		DrawExtendGraph(centerX - 70, centerY - rateS * 5, centerX + 70, centerY - rateS * 5 + 70, longNotesHandle[2], TRUE);
+		DrawExtendGraph(x - 50, y - 400, x + 50, y - rateS * 5, longNotesHandle[1], TRUE);
+		DrawExtendGraph(x - 50, y - rateS * 5, x + 50, y - rateS * 5 + 50, longNotesHandle[2], TRUE);
 	}
 	else if (time < releaseTime)
 	{
-		DrawExtendGraph(centerX - 70, centerY - 400, centerX + 70, centerY, longNotesHandle[1], TRUE);
-		DrawExtendGraph(centerX - 70, centerY, centerX + 70, centerY + 70, longNotesHandle[2], TRUE);
+		DrawExtendGraph(x - 50, y - 400, x + 50, y, longNotesHandle[1], TRUE);
+		DrawExtendGraph(x - 50, y, x + 50, y + 50, longNotesHandle[2], TRUE);
 	}
 	else if (time < releaseTime + popToJustTime)
 	{
-		DrawExtendGraph(centerX - 70, centerY - rateE * 5 - 70, centerX + 70, centerY - rateE * 5, longNotesHandle[0], TRUE);
-		DrawExtendGraph(centerX - 70, centerY - rateE * 5, centerX + 70, centerY, longNotesHandle[1], TRUE);
-		DrawExtendGraph(centerX - 70, centerY, centerX + 70, centerY + 70, longNotesHandle[2], TRUE);
+		DrawExtendGraph(x - 50, y - rateE * 5 - 50, x + 50, y - rateE * 5, longNotesHandle[0], TRUE);
+		DrawExtendGraph(x - 50, y - rateE * 5, x + 50, y, longNotesHandle[1], TRUE);
+		DrawExtendGraph(x - 50, y, x + 50, y + 50, longNotesHandle[2], TRUE);
 	}
 
 	if (!push)
 	{
-		DrawExtendGraph(centerX - 70 - rateS, centerY - 70 - rateS, centerX + 70 + rateS, centerY + 70 + rateS, notesHandle, TRUE);
+		DrawExtendGraph(x - 50 - rateS, y - 50 - rateS, x + 50 + rateS, y + 50 + rateS, notesHandle, TRUE);
 	}
 	else
 	{
-		DrawExtendGraph(centerX - 70 - rateE, centerY - 70 - rateE, centerX + 70 + rateE, centerY + 70 + rateE, notesHandle, TRUE);
-	}
+		DrawExtendGraph(x - 50 - rateE, y - 50 - rateE, x + 50 + rateE, y + 50 + rateE, notesHandle, TRUE);
+	}*/
+
+	DrawExtendGraph(x, y - 50, x + releaseTime / 10, y + 50, longNotesHandle[1], TRUE);
+
+	DrawExtendGraph(x - 50, y - 50, x + 50, y + 50, notesHandle, TRUE);
+	DrawExtendGraph(x - 50 + releaseTime / 10, y - 50, x + 50 + releaseTime / 10, y + 50, notesHandle, TRUE);
+
 }
 
 void LongNotes::Push()

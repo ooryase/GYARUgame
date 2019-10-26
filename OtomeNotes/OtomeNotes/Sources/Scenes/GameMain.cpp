@@ -14,12 +14,14 @@ GameMain::GameMain() : VirtualScene(),
 	//notesHandle(LoadGraph("Assets/Textures/GameMain/Notes.png")),
 	//osakabechankariHandle(LoadGraph("Assets/Textures/GameMain/Osakabechankari.png")),
 	textFrameHandle(LoadGraph("Assets/Textures/GameMain/TextFrame.png")),
-	SE_notesHandle(LoadSoundMem("Assets/Sounds/SE/Notes.mp3"))
+	SE_notesHandle(LoadSoundMem("Assets/Sounds/SE/Notes.mp3")),
+	gaugeHandle(LoadGraph("Assets/Textures/GameMain/Gauge.png")),
+	gaugeHandle2(LoadGraph("Assets/Textures/GameMain/Gauge2.png"))
 {
 	notesHandle[0] = LoadGraph("Assets/Textures/GameMain/Notes.png");
-	notesHandle[1] = MakeScreen(200, 200, TRUE);
-	notesHandle[2] = MakeScreen(200, 200, TRUE);
-	int i = GraphFilterBlt(notesHandle[0],notesHandle[1], DX_GRAPH_FILTER_HSB,0,90,0,0);
+	notesHandle[1] = MakeScreen(224, 225, TRUE);
+	notesHandle[2] = MakeScreen(224, 225, TRUE);
+	int i = GraphFilterBlt(notesHandle[0],notesHandle[1], DX_GRAPH_FILTER_HSB,0,-120,0,0);
 	int j = GraphFilterBlt(notesHandle[0],notesHandle[2], DX_GRAPH_FILTER_HSB,0,60,0,0);
 	LoadDivGraph("Assets/Textures/GameMain/LongNotes.png",3,1,3,200,100,LongNotesHandle);
 	bgmHandle = LoadSoundMem("Assets/Sounds/BGM/Himeka.wav");
@@ -31,20 +33,21 @@ GameMain::GameMain() : VirtualScene(),
 	waitTime = 0;
 	popToJustTime = 1200;
 	textQueueWaitTime = popToJustTime - 200;
+	buttons.push_back(std::make_shared<Button>(buttonHandle, popToJustTime));
 
 	backGroundStep = 0;
 
 	int x, y, c;
 	GetScreenState(&x, &y, &c);
 
-	textX = 200;
+	textX = notesX = 200;
 	textY = 600;
-
-	notesX = x - 250;
-	notesY = y - 120;
+	notesY = textY - 100;
+	buttonXTimer = 0;
 	
 	score = 0;
 	scoreCount[0] = scoreCount[1] = scoreCount[2] = 0;
+	feel = 50;
 
 	printfDx("%d\n",modelHandle);
 	Live2D_Model_SetExtendRate(modelHandle, 0.6f,0.6f);
@@ -106,6 +109,8 @@ void GameMain::MainUpdate()
 
 	CSVRead();
 
+	buttonXTimer += time->GetDeltaTime();
+
 	if (FileRead_eof(fileHandle) || InputController::getInstance().GetPush(KEY_INPUT_BACK))
 	{
 		time->Reset();
@@ -124,24 +129,28 @@ void GameMain::MainUpdate()
 		{
 			scoreCount[var->Evalution]++;
 			PlaySoundMem(SE_notesHandle, DX_PLAYTYPE_BACK);
+
+			auto i = buttons.at(0)->GetTime() / 10 + 80;
 			switch (var->Evalution)
 			{
 			case Notes::EvalutionType::GOOD:
 				score += 100;
-				particles.push_back(std::make_shared<EvalutionText>(800, 680, fontHandle, "GOOD", GetColor(255, 205, 100)));
-				particles.push_back(std::make_shared<NotesButton>(notesX, notesY, buttonHandle));
-				particles.push_back(std::make_shared<Krkr>(notesX, notesY, krkrHandle, 0));
+				AddFeel(15);
+				particles.push_back(std::make_shared<EvalutionText>(i, 680, fontHandle, "GOOD", GetColor(255, 205, 100)));
+				particles.push_back(std::make_shared<NotesButton>(i, notesY, buttonHandle));
+				particles.push_back(std::make_shared<Krkr>(i, notesY, krkrHandle, 0));
 				break;
 			case Notes::EvalutionType::PERFECT:
 				score += 200;
-				particles.push_back(std::make_shared<EvalutionText>(800, 680, fontHandle, "PERFECT", GetColor(255, 255, 155)));
-				particles.push_back(std::make_shared<NotesButton>(notesX, notesY, buttonHandle));
-				particles.push_back(std::make_shared<Krkr>(notesX, notesY, krkrHandle, 0));
+				AddFeel(10);
+				particles.push_back(std::make_shared<EvalutionText>(i, 680, fontHandle, "PERFECT", GetColor(255, 255, 155)));
+				particles.push_back(std::make_shared<NotesButton>(i, notesY, buttonHandle));
+				particles.push_back(std::make_shared<Krkr>(i, notesY, krkrHandle, 0));
 				break;
 			case Notes::EvalutionType::BAD:
-				score -= 100;
-				particles.push_back(std::make_shared<EvalutionText>(800, 680, fontHandle, "BAD", GetColor(205, 185, 235)));
-				particles.push_back(std::make_shared<NotesButton>(notesX, notesY, buttonHandle));
+				AddFeel(-8);
+				particles.push_back(std::make_shared<EvalutionText>(i, 680, fontHandle, "BAD", GetColor(205, 185, 235)));
+				particles.push_back(std::make_shared<NotesButton>(i, notesY, buttonHandle));
 				break;
 			}
 			var->Push();
@@ -160,6 +169,15 @@ void GameMain::MainUpdate()
 		std::remove_if(particles.begin(), particles.end(), [](
 			std::shared_ptr<VirtualParticle>am) {return  am->Dead; });
 	particles.erase(itr, particles.end());
+
+	for (auto&& var : buttons)
+	{
+		var->Update(time->GetDeltaTime());
+	}
+	auto itrb =
+		std::remove_if(buttons.begin(), buttons.end(), [](
+			std::shared_ptr<Button>am) {return  am->Dead; });
+	buttons.erase(itrb, buttons.end());
 
 	// モーション再生が終了していたらアイドリングモーションをランダムで再生
 	if (Live2D_Model_IsMotionFinished(modelHandle) == TRUE)
@@ -252,12 +270,19 @@ void GameMain::MainDraw() const
 	DrawExtendGraph(x / 2 - 153, 100, x / 2 + 153, 100 + 616, charaHandle, TRUE);
 	DrawExtendGraph(50, y - 300, x - 50, y, textFrameHandle, TRUE);
 
+	DrawExtendGraph(50, 50, 100, y - 350, gaugeHandle, TRUE);
+	DrawExtendGraph(35, (y - 400) * (100 - feel) / 100 + 10, 115, (y - 400) * (100 - feel) / 100 + 90, gaugeHandle2, TRUE);
+
+
 	for (auto&& var : popText)
 		var->Draw(fontHandle);
 
-	DrawExtendGraph(notesX - 70, notesY - 70, notesX + 70, notesY + 70, buttonHandle, TRUE);
+	//DrawExtendGraph(buttonXTimer / 10 + 30, notesY - 50, buttonXTimer / 10 + 130, notesY + 50, buttonHandle, TRUE);
 	for (auto&& var : notes)
-		var->Draw(notesX, notesY);
+		var->Draw();
+
+	for (auto&& var : buttons)
+		var->Draw();
 
 	for (auto&& var : particles)
 		var->Draw();
@@ -348,15 +373,26 @@ void GameMain::CSVRead()
 
 		waitTextQueue.push(CharClass(readText));
 
+		int addTime = (readText[3] - '0') * 1000
+			+ (readText[4] - '0') * 100
+			+ (readText[5] - '0') * 10
+			+ (readText[6] - '0') * 1;
+
+		if (readText[8] == 'C' || readText[8] == 'E')
+		{
+			notesX = 200;
+			for (auto&& var : buttons)
+				var->End();
+			buttons.push_back(std::make_shared<Button>(buttonHandle, popToJustTime));
+			buttonXTimer = 0;
+		}
 		if (readText[0] == 'N')
 		{
 			NotesPush(readText[1]);
 		}
+		notesX += addTime / 10;
 
-		waitTime += (readText[3] - '0') * 1000;
-		waitTime += (readText[4] - '0') * 100;
-		waitTime += (readText[5] - '0') * 10;
-		waitTime += readText[6] - '0';
+		waitTime += addTime;
 	}
 
 	waitTime -= time->GetDeltaTime();
@@ -372,13 +408,13 @@ void GameMain::CSVRead()
 void GameMain::NotesPush(char _notesType)
 {
 	if (readText[1] == 'N')
-		notes.push_back(std::make_shared<Notes>(notesHandle[0]));
+		notes.push_back(std::make_shared<Notes>(notesHandle[0], notesX, notesY));
 	else if (readText[1] == 'L')
-		notes.push_back(std::make_shared<LongNotes>(notesHandle[1],
+		notes.push_back(std::make_shared<LongNotes>(notesHandle[1],notesX,notesY,
 		(readText[10] - '0') * 1000 + (readText[11] - '0') * 100 + (readText[12] - '0') * 10 + (readText[13] - '0'),
 			LongNotesHandle));
 	else if (readText[1] == 'R')
-		notes.push_back(std::make_shared<RepeatedNotes>(notesHandle[2],
+		notes.push_back(std::make_shared<RepeatedNotes>(notesHandle[2], notesX, notesY,
 		(readText[10] - '0') * 1000 + (readText[11] - '0') * 100 + (readText[12] - '0') * 10 + (readText[13] - '0'),
 			LongNotesHandle));
 }
@@ -408,16 +444,27 @@ void GameMain::QueueRead()
 		backGroundStep++;
 	}
 
+	int addTime = (text[3] - '0') * 1000
+		+ (text[4] - '0') * 100
+		+ (text[5] - '0') * 10
+		+ (text[6] - '0') * 1;
+
 	if (text[0] != 'N')
 	{
 		popText.push_back(std::make_unique<PopText>(text, textX, textY, GetColor(255, 255, 255)));
-		textX += 30;
 	}
+	textX += addTime / 10;
 
-	textQueueWaitTime += (text[3] - '0') * 1000;
-	textQueueWaitTime += (text[4] - '0') * 100;
-	textQueueWaitTime += (text[5] - '0') * 10;
-	textQueueWaitTime += text[6] - '0';
+	textQueueWaitTime += addTime;
+}
+
+void GameMain::AddFeel(int addFeel)
+{
+	feel += addFeel;
+	feel = (feel > 100) ? 100 : feel;
+	feel = (feel < 0) ? 0 : feel;
+
+	fever = (feel >= 80);
 }
 
 template <typename T> void GameMain::UpdateAndDelete(std::vector<T>&& t, int deltaTime)

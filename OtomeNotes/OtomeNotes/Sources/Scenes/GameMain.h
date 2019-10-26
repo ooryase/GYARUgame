@@ -5,6 +5,7 @@
 #include"GameMain/LongNotes.h"
 #include"GameMain/RepeatedNotes.h"
 #include"GameMain/PopText.h"
+#include"GameMain/Button.h"
 #include"../MainController/TimeManager.h"
 #include"../Particles/VirtualParticle.h"
 #include"../Particles/EvalutionText.h"
@@ -28,6 +29,8 @@ private:
 	int bgmHandle;
 	int fullTextHandle[3];
 	int krkrHandle;
+	const int gaugeHandle;
+	const int gaugeHandle2;
 
 	//CSVロード管理
 	int waitTime;
@@ -38,8 +41,9 @@ private:
 	int textQueueWaitTime;
 
 	//ノーツ描画管理
-	int textX, textY; //テキストの1文字目の座標
-	int notesX, notesY; //ノーツの座標
+	int textX, textY; //テキストの生成座標
+	int notesX, notesY; //ノーツの生成座標
+	int buttonXTimer; //ボタンの座標基準のタイマ―
 
 	//背景管理
 	int backGroundStep;
@@ -48,10 +52,13 @@ private:
 	std::vector<std::shared_ptr<PopText>> popText;
 	std::vector<std::shared_ptr<Notes>> notes;
 	std::vector<std::shared_ptr<VirtualParticle>> particles;
+	std::vector<std::shared_ptr<Button>> buttons;
 
 	//スコア管理
 	int score;
 	int scoreCount[3];
+	int feel;
+	bool fever;
 
 	//リザルト用変数
 	int scorePopCount;
@@ -86,6 +93,8 @@ private:
 	void CSVRead();
 	void QueueRead();
 	void NotesPush(char _notesType);
+
+	void AddFeel(int addFeel);
 
 	template <typename T> void UpdateAndDelete(std::vector<T>&& t, int deltaTime);
 };
