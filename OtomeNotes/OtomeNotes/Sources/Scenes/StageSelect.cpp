@@ -12,6 +12,7 @@ StageSelect::StageSelect() : VirtualScene(),
 	stageImageHandle.push_back(LoadGraph("Assets/Textures/StageSelect/Stage1.jpg"));
 	stageImageHandle.push_back(LoadGraph("Assets/Textures/StageSelect/Stage2.jpg"));
 	stageImageHandle.push_back(LoadGraph("Assets/Textures/StageSelect/Stage3.jpg"));
+	LoadDivGraph("Assets/Textures/GameMain/FullTexture.png", 1, 1, 1, 640, 360, &loadHandle);
 
 	radian = 0.0;
 	selectStage = 0;
@@ -148,6 +149,16 @@ void StageSelect::Draw() const
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, a);
 			DrawExtendGraph(static_cast<int>(- a * 16 / 20.0),static_cast<int>( - a * 9 / 20.0), x + static_cast<int>(a * 16 / 20.0), y + static_cast<int>(a * 9 / 20.0), stageImageHandle.at(selectStage), FALSE);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+		}
+		else if (time->GetTimeCount() > 2490)
+		{
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - (3000 - time->GetTimeCount()) / 2);
+			DrawExtendGraph(0, 0, x, y, loadHandle, TRUE);
+			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+		}
+		else if (time->GetTimeCount() > 3000)
+		{
+			DrawExtendGraph(0, 0, x, y, loadHandle, TRUE);
 		}
 		break;
 	default:

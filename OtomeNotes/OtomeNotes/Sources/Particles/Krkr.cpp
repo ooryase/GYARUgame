@@ -2,9 +2,10 @@
 #include"DxLib.h"
 #include<iostream>
 
-Krkr::Krkr(int x, int y, int _texHandle, int _hue) : VirtualParticle(x, y),
+Krkr::Krkr(int x, int y, int _texHandle, int _hue,double _rate) : VirtualParticle(x, y),
 texHandle(_texHandle),
-hue(_hue)
+hue(_hue),
+rate(_rate)
 {
 	time = 0;
 }
@@ -30,9 +31,9 @@ void Krkr::Draw() const
 		alpha = (alpha > 255) ? 255 : alpha;
 
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200 - time / 2);
-		DrawRotaGraph2(baseX + static_cast<int>(cos(i) * 0.25 * time), baseY + static_cast<int>(sin(i) * 0.25 * time),
+		DrawRotaGraph2(baseX + static_cast<int>(cos(i * 0.6) * 0.25 * time), baseY + static_cast<int>(sin(i * 0.6) * 0.25 * time),
 			20, 20,
-			2.0, i / 3.5,//iTime / 120.0,
+			rate, i / 2.5,//iTime / 120.0,
 			texHandle, TRUE, FALSE);
 
 	}

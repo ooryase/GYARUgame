@@ -4,7 +4,7 @@
 Button::Button(int _texHandle, int _popToJustTime) :
 	texHandle(_texHandle),
 	baseX(200),
-	baseY(500),
+	baseY(550),
 	notesPopToJustTime(_popToJustTime)
 {
 	time = 0;
@@ -27,7 +27,7 @@ void Button::Update(int deltaTime)
 
 void Button::Draw() const
 {
-	DrawExtendGraph(time / 10 + 30, baseY - 50, time / 10 + 130, baseY + 50, texHandle, TRUE);
+	DrawGraph(time / 5 - 90, baseY - 50, texHandle, TRUE);
 }
 
 void Button::End()

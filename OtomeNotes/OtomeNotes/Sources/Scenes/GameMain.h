@@ -21,14 +21,16 @@ private:
 	const int fontHandle;
 	const int buttonHandle;
 	int notesHandle[3];
-	int LongNotesHandle[3];
+	const int longNotesHandle;
 	int charaHandle;
 	int backGroundHandle[3];
 	const int textFrameHandle;
 	const int SE_notesHandle;
 	int bgmHandle;
 	int fullTextHandle[3];
+	int feverBackHandle[2];
 	int krkrHandle;
+	int hwhwHandle;
 	const int gaugeHandle;
 	const int gaugeHandle2;
 
@@ -43,7 +45,6 @@ private:
 	//ノーツ描画管理
 	int textX, textY; //テキストの生成座標
 	int notesX, notesY; //ノーツの生成座標
-	int buttonXTimer; //ボタンの座標基準のタイマ―
 
 	//背景管理
 	int backGroundStep;
@@ -57,8 +58,10 @@ private:
 	//スコア管理
 	int score;
 	int scoreCount[3];
+	int scoreColor[3];
 	int feel;
-	bool fever;
+	int fever;
+	int feverTime;
 
 	//リザルト用変数
 	int scorePopCount;
@@ -90,11 +93,16 @@ private:
 	void MainDraw() const;
 	void ResultDraw() const;
 
+	void GaugeDraw(int x,int y) const;
+	void FeverDraw(int x, int y) const;
+
 	void CSVRead();
 	void QueueRead();
 	void NotesPush(char _notesType);
 
 	void AddFeel(int addFeel);
+	//scoreCountの番号、分子、分母
+	std::string ScoreCountTostring(int num, int numerator,int denominator) const;
 
 	template <typename T> void UpdateAndDelete(std::vector<T>&& t, int deltaTime);
 };
