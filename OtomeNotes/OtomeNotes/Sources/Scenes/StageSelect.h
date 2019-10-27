@@ -5,7 +5,7 @@
 class StageSelect : public VirtualScene
 {
 private:
-	std::vector<int> stageImageHandle;
+	std::vector<std::pair<int,int>> stageImageHandle;
 	int loadHandle;
 
 	double radian;

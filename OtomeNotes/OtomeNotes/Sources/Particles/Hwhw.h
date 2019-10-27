@@ -2,7 +2,7 @@
 #include<iostream>
 #include"VirtualParticle.h"
 
-class Krkr : public VirtualParticle
+class Hwhw : public VirtualParticle
 {
 private:
 	const int texHandle;
@@ -12,7 +12,7 @@ private:
 	int time;
 
 public:
-	Krkr(int x, int y, int _texHandle, int _hue,double _rate);
+	Hwhw(int x, int y, int _texHandle, int _hue, double _rate);
 
 	void Update(int deltaTime);
 	void Draw() const;

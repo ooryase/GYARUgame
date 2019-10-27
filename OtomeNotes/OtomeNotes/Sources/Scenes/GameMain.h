@@ -11,18 +11,18 @@
 #include"../Particles/EvalutionText.h"
 #include"../Particles/NotesButton.h"
 #include"../Particles/Krkr.h"
+#include"../Particles/Hwhw.h"
 
 class GameMain : public VirtualScene
 {
 private:
 	//ロードハンドル
-	const int modelHandle;
+	int modelHandle;
 	int fileHandle;
 	const int fontHandle;
 	const int buttonHandle;
 	int notesHandle[3];
 	const int longNotesHandle;
-	int charaHandle;
 	int backGroundHandle[3];
 	const int textFrameHandle;
 	const int SE_notesHandle;
@@ -30,7 +30,7 @@ private:
 	int fullTextHandle[3];
 	int feverBackHandle[2];
 	int krkrHandle;
-	int hwhwHandle;
+	int hwhwHandle[4];
 	const int gaugeHandle;
 	const int gaugeHandle2;
 
@@ -53,6 +53,7 @@ private:
 	std::vector<std::shared_ptr<PopText>> popText;
 	std::vector<std::shared_ptr<Notes>> notes;
 	std::vector<std::shared_ptr<VirtualParticle>> particles;
+	std::vector<std::shared_ptr<VirtualParticle>> backParticles;
 	std::vector<std::shared_ptr<Button>> buttons;
 
 	//スコア管理

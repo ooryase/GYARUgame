@@ -28,9 +28,12 @@ void Title::Update()
 	case TitlePhaseList::START:
 		if (InputController::getInstance().GetPush(KEY_INPUT_Z))
 		{
-			PlayMovieToGraph(movieHandle);
-			phase = TitlePhaseList::MOVIE;
-			time->Reset();
+			//PlayMovieToGraph(movieHandle);
+			//phase = TitlePhaseList::MOVIE;
+			//time->Reset();
+			phase = TitlePhaseList::NEXT;
+			nextScene = std::make_shared<StageSelect>();
+
 		}
 #if _DEBUG		
 		else if (InputController::getInstance().GetPush(KEY_INPUT_BACK))

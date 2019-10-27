@@ -8,7 +8,6 @@
 #include"../MainController/GameData.h"
 
 GameMain::GameMain() : VirtualScene(),
-	modelHandle(Live2D_LoadModel("Assets/Live2d/Hiyori/Hiyori.model3.json")),
 	fileHandle(FileRead_open("Assets/CSV/Notes.csv")),
 	fontHandle(LoadFontDataToHandle("Assets/Fonts/Senobi_m.dft",1)),
 	buttonHandle(LoadGraph("Assets/Textures/GameMain/Button.png")),
@@ -29,7 +28,7 @@ GameMain::GameMain() : VirtualScene(),
 	LoadDivGraph("Assets/Textures/GameMain/FullTexture.png", 3, 1, 3, 640, 360, fullTextHandle);
 	LoadDivGraph("Assets/Textures/GameMain/Fever.png",2 , 1, 2, 640, 400, feverBackHandle);
 	krkrHandle = LoadGraph("Assets/Textures/Particles/Star.png");
-	hwhwHandle = LoadGraph("Assets/Textures/Particles/Hwhw.png");
+	LoadDivGraph("Assets/Textures/Particles/Hwhw.png", 4, 1, 4, 100, 100, hwhwHandle);
 
 	LoadSelectChara();
 
@@ -55,8 +54,6 @@ GameMain::GameMain() : VirtualScene(),
 	feel = 50;
 	fever = 0;
 
-	printfDx("%d\n",modelHandle);
-	Live2D_Model_SetExtendRate(modelHandle, 0.6f,0.6f);
 
 	phase = PhaseType::START;
 
@@ -74,7 +71,6 @@ GameMain::~GameMain()
 	DeleteGraph(notesHandle[0]);
 	DeleteGraph(notesHandle[1]);
 	DeleteGraph(notesHandle[2]);
-	DeleteGraph(charaHandle);
 	DeleteGraph(backGroundHandle[0]);
 	DeleteGraph(backGroundHandle[1]);
 	DeleteGraph(backGroundHandle[2]);
@@ -108,6 +104,17 @@ void GameMain::StartUpdate()
 		PlaySoundMem(bgmHandle, DX_PLAYTYPE_BACK);
 		time->Reset();
 	}
+
+	// モーション再生が終了していたらアイドリングモーションをランダムで再生
+	if (Live2D_Model_IsMotionFinished(modelHandle) == TRUE)
+	{
+		Live2D_Model_StartMotion(modelHandle, "Idle", 0);
+	}
+
+	// モデルの状態を60分の1秒分進める
+	Live2D_Model_Update(modelHandle, time->GetDeltaTime() / 1000.0f);
+
+
 }
 
 void GameMain::MainUpdate()
@@ -146,6 +153,8 @@ void GameMain::MainUpdate()
 				particles.push_back(std::make_shared<EvalutionText>(i, 600, fontHandle, "GOOD", GetColor(255, 205, 100)));
 				particles.push_back(std::make_shared<NotesButton>(i, notesY, buttonHandle));
 				particles.push_back(std::make_shared<Krkr>(i, notesY, krkrHandle, 0, 2.0));
+				backParticles.push_back(std::make_shared<Hwhw>(640, 150, hwhwHandle[1], 0, 3.0));
+				Live2D_Model_StartMotion(modelHandle, "Good", 0);
 				break;
 			case Notes::EvalutionType::PERFECT:
 				score += 200;
@@ -153,12 +162,15 @@ void GameMain::MainUpdate()
 				particles.push_back(std::make_shared<EvalutionText>(i, 600, fontHandle, "PERFECT", GetColor(255, 255, 155)));
 				particles.push_back(std::make_shared<NotesButton>(i, notesY, buttonHandle));
 				particles.push_back(std::make_shared<Krkr>(i, notesY, krkrHandle, 0, 2.0));
-				//particles.push_back(std::make_shared<Krkr>(640, 300, hwhwHandle, 0, 5.0));
+				backParticles.push_back(std::make_shared<Hwhw>(640, 150, hwhwHandle[0], 0, 3.0));
+				Live2D_Model_StartMotion(modelHandle, "Parfect", 0);
 				break;
 			case Notes::EvalutionType::BAD:
 				AddFeel(-8);
 				particles.push_back(std::make_shared<EvalutionText>(i, 600, fontHandle, "BAD", GetColor(205, 185, 235)));
 				particles.push_back(std::make_shared<NotesButton>(i, notesY, buttonHandle));
+				backParticles.push_back(std::make_shared<Hwhw>(640, 150, hwhwHandle[2], 0, 3.0));
+				Live2D_Model_StartMotion(modelHandle, "Bad", 0);
 				break;
 			}
 			var->Push();
@@ -178,6 +190,14 @@ void GameMain::MainUpdate()
 			std::shared_ptr<VirtualParticle>am) {return  am->Dead; });
 	particles.erase(itr, particles.end());
 
+	for (auto&& var : backParticles)
+		var->Update(time->GetDeltaTime());
+
+	auto itrp =
+		std::remove_if(backParticles.begin(), backParticles.end(), [](
+			std::shared_ptr<VirtualParticle>am) {return  am->Dead; });
+	backParticles.erase(itrp, backParticles.end());
+
 	for (auto&& var : buttons)
 	{
 		var->Update(time->GetDeltaTime());
@@ -190,7 +210,7 @@ void GameMain::MainUpdate()
 	// モーション再生が終了していたらアイドリングモーションをランダムで再生
 	if (Live2D_Model_IsMotionFinished(modelHandle) == TRUE)
 	{
-		Live2D_Model_StartMotion(modelHandle, "Idle", GetRand(8));
+		Live2D_Model_StartMotion(modelHandle, "Idle", 0);
 	}
 
 	// モデルの状態を60分の1秒分進める
@@ -217,7 +237,7 @@ void GameMain::ResultUpdate()
 	// モーション再生が終了していたらアイドリングモーションをランダムで再生
 	if (Live2D_Model_IsMotionFinished(modelHandle) == TRUE)
 	{
-		Live2D_Model_StartMotion(modelHandle, "Idle", GetRand(8));
+		Live2D_Model_StartMotion(modelHandle, "Idle", 0);
 	}
 
 	// モデルの状態を60分の1秒分進める
@@ -247,8 +267,7 @@ void GameMain::StartDraw() const
 	GetScreenState(&x, &y, &c);
 
 	DrawExtendGraph(0, 0, x, y, backGroundHandle[backGroundStep], FALSE);
-	DrawExtendGraph(x / 2 - 153, 100, x / 2 + 153, 100 + 616, charaHandle, TRUE);
-	DrawExtendGraph(50, y - 300, x - 50, y, textFrameHandle, TRUE);
+	//DrawExtendGraph(x / 2 - 153, 100, x / 2 + 153, 100 + 616, charaHandle, TRUE);
 
 	// Live2D描画の開始
 	Live2D_RenderBegin();
@@ -266,6 +285,7 @@ void GameMain::StartDraw() const
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
 
+	DrawExtendGraph(50, y - 300, x - 50, y, textFrameHandle, TRUE);
 
 }
 
@@ -276,10 +296,22 @@ void GameMain::MainDraw() const
 
 	DrawExtendGraph(0, 0, x, y, backGroundHandle[backGroundStep], FALSE);
 	FeverDraw(x,y);
-	DrawExtendGraph(x / 2 - 153, 100, x / 2 + 153, 100 + 616, charaHandle, TRUE);
+
+	for (auto&& var : backParticles)
+		var->Draw();
+
+	// Live2D描画の開始
+	Live2D_RenderBegin();
+
+	// モデルの描画
+	Live2D_Model_Draw(modelHandle);
+
+	// Live2D描画の終了
+	Live2D_RenderEnd();
+
 	DrawExtendGraph(50, y - 300, x - 50, y, textFrameHandle, TRUE);
 
-	GaugeDraw(x,y);
+	GaugeDraw(x, y);
 
 
 	for (auto&& var : popText)
@@ -294,15 +326,6 @@ void GameMain::MainDraw() const
 
 	for (auto&& var : particles)
 		var->Draw();
-
-	// Live2D描画の開始
-	Live2D_RenderBegin();
-
-	// モデルの描画
-	Live2D_Model_Draw(modelHandle);
-
-	// Live2D描画の終了
-	Live2D_RenderEnd();
 
 }
 
@@ -319,7 +342,6 @@ void GameMain::ResultDraw() const
 	else
 		DrawExtendGraph(0,0, x, y, fullTextHandle[2], FALSE);
 
-	DrawExtendGraph(x / 2 - 153, 100, x / 2 + 153, 100 + 616, charaHandle, TRUE);
 	if (time->GetTimeCount() < x / 2)
 	{
 		DrawExtendGraph(50 + time->GetTimeCount() * 2, y - 300, x - 50 + time->GetTimeCount() * 2, y, textFrameHandle, TRUE);
@@ -352,7 +374,7 @@ void GameMain::ResultDraw() const
 	//スコアの表示
 	//if(time->GetTimeCount() < x / 2)
 
-	if (time->GetTimeCount() < x / 2)
+	/*if (time->GetTimeCount() < x / 2)
 	{
 		DrawExtendGraph(50 + time->GetTimeCount() / 2, 50, 100 + time->GetTimeCount() / 2, y - 350, gaugeHandle, TRUE);
 		DrawExtendGraph(35 + time->GetTimeCount() / 2, (y - 400) * (100 - feel) / 100 + 10,
@@ -363,7 +385,7 @@ void GameMain::ResultDraw() const
 		DrawExtendGraph(50 + x / 4, 50, 100 + x / 4, y - 350, gaugeHandle, TRUE);
 		DrawExtendGraph(35 + x / 4, (y - 400) * (100 - feel) / 100 + 10,
 			115 + x / 4, (y - 400) * (100 - feel) / 100 + 90, gaugeHandle2, TRUE);
-	}
+	}*/
 
 
 	for (auto&& var : particles)
@@ -417,18 +439,24 @@ void GameMain::LoadSelectChara()
 {
 	if (GameData::getInstance().Stage == 0)
 	{
-		charaHandle = LoadGraph("Assets/Textures/GameMain/Osakabechankari.png");
+		modelHandle = Live2D_LoadModel("Assets/Live2d/Himeka/Himeka.model3.json");
 		LoadDivGraph("Assets/Textures/GameMain/HimekaBackGround.png", 3, 1, 3, 640, 360, backGroundHandle);
+
+		Live2D_Model_SetExtendRate(modelHandle, 1.6f,1.6f);
+		Live2D_Model_SetTranslate(modelHandle, 0.0f, -100.0f);
 	}
 	else if (GameData::getInstance().Stage == 1)
 	{
-		charaHandle = LoadGraph("Assets/Textures/GameMain/Osakabechankari.png");
+		modelHandle = Live2D_LoadModel("Assets/Live2d/Himeka/Himeka.model3.json");
 		LoadDivGraph("Assets/Textures/GameMain/HimekaBackGround.png", 3, 1, 3, 640, 360, backGroundHandle);
 	}
 	else if(GameData::getInstance().Stage == 2)
 	{
-		charaHandle = LoadGraph("Assets/Textures/GameMain/Osakabechankari.png");
+		modelHandle = Live2D_LoadModel("Assets/Live2d/Manami/manami.model3.json");
 		LoadDivGraph("Assets/Textures/GameMain/HimekaBackGround.png", 3, 1, 3, 640, 360, backGroundHandle);
+
+		Live2D_Model_SetExtendRate(modelHandle, 1.3f, 1.3f);
+		Live2D_Model_SetTranslate(modelHandle, 0.0f, -60.0f);
 	}
 }
 

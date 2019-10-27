@@ -130,6 +130,7 @@
     <ClCompile Include="Sources\MainController\SceneController.cpp" />
     <ClCompile Include="Sources\MainController\TimeManager.cpp" />
     <ClCompile Include="Sources\Particles\EvalutionText.cpp" />
+    <ClCompile Include="Sources\Particles\Hwhw.cpp" />
     <ClCompile Include="Sources\Particles\Krkr.cpp" />
     <ClCompile Include="Sources\Particles\NotesButton.cpp" />
     <ClCompile Include="Sources\Particles\VirtualParticle.cpp" />
@@ -149,6 +150,7 @@
     <ClInclude Include="Sources\MainController\SceneController.h" />
     <ClInclude Include="Sources\MainController\TimeManager.h" />
     <ClInclude Include="Sources\Particles\EvalutionText.h" />
+    <ClInclude Include="Sources\Particles\Hwhw.h" />
     <ClInclude Include="Sources\Particles\Krkr.h" />
     <ClInclude Include="Sources\Particles\NotesButton.h" />
     <ClInclude Include="Sources\Particles\VirtualParticle.h" />

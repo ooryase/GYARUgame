@@ -9,9 +9,12 @@
 StageSelect::StageSelect() : VirtualScene(),
 	PI(3.14159265358979323846)
 {
-	stageImageHandle.push_back(LoadGraph("Assets/Textures/StageSelect/Stage1.jpg"));
-	stageImageHandle.push_back(LoadGraph("Assets/Textures/StageSelect/Stage2.jpg"));
-	stageImageHandle.push_back(LoadGraph("Assets/Textures/StageSelect/Stage3.jpg"));
+	stageImageHandle.push_back(std::make_pair(LoadGraph("Assets/Textures/StageSelect/Stage1.jpg"),
+		LoadGraph("Assets/Textures/StageSelect/font1.png")));
+	stageImageHandle.push_back(std::make_pair(LoadGraph("Assets/Textures/StageSelect/Stage2.jpg"),
+		LoadGraph("Assets/Textures/StageSelect/font2.png")));
+	stageImageHandle.push_back(std::make_pair(LoadGraph("Assets/Textures/StageSelect/Stage3.jpg"),
+		LoadGraph("Assets/Textures/StageSelect/font3.png")));
 	LoadDivGraph("Assets/Textures/GameMain/FullTexture.png", 1, 1, 1, 640, 360, &loadHandle);
 
 	radian = 0.0;
@@ -23,7 +26,8 @@ StageSelect::~StageSelect()
 {
 	for (auto s : stageImageHandle)
 	{
-		DeleteGraph(s);
+		DeleteGraph(s.first);
+		DeleteGraph(s.second);
 	}
 }
 
@@ -106,7 +110,7 @@ void StageSelect::Draw() const
 	int x, y, c;
 	GetScreenState(&x, &y, &c);
 
-#define SIH(num) stageImageHandle.at((selectStage + stageImageHandle.size() + num) % stageImageHandle.size())
+#define SIH(num) stageImageHandle.at((selectStage + stageImageHandle.size() + num) % stageImageHandle.size()).first
 
 	int a = static_cast<int>( 255.0 * time->GetTimeCount() / 1000.0);
 	switch (rotatePhase)
@@ -117,37 +121,47 @@ void StageSelect::Draw() const
 	case StageSelect::ROTATE:
 		if (time->GetTimeCount() < 500)
 		{
-			DrawExtendGraph(Perf(x, 15.0 + 70.0 * cos(radian + 2.0 / size * PI + 0.5 * PI)), Perf(y, 10.0 + 15.0 * sin(radian + 2.0 / size * PI + 0.5 * PI)),
-				Perf(x, 85.0 + 70.0 * cos(radian + 2.0 / size * PI + 0.5 * PI)), Perf(y, 80.0 + 15.0 * sin(radian + 2.0 / size * PI + 0.5 * PI)), SIH(1), FALSE);
-			DrawExtendGraph(Perf(x, 15.0 + 70.0 * cos(radian - 2.0 / size * PI + 0.5 * PI)), Perf(y, 10.0 + 15.0 * sin(radian - 2.0 / size * PI + 0.5 * PI)),
-				Perf(x, 85.0 + 70.0 * cos(radian - 2.0 / size * PI + 0.5 * PI)), Perf(y, 80.0 + 15.0 * sin(radian - 2.0 / size * PI + 0.5 * PI)), SIH(0), FALSE);
-			DrawExtendGraph(Perf(x, 15.0 + 70.0 * cos(radian + 0.5 * PI)), Perf(y, 10.0 + 15.0 * sin(radian + 0.5 * PI)),
-				Perf(x, 85.0 + 70.0 * cos(radian + 0.5 * PI)), Perf(y, 80.0 + 15.0 * sin(radian + 0.5 * PI)), SIH(2), FALSE);
+			DrawExtendGraph(Perf(x, 15.0 + 70.0 * cos(radian + 2.0 / size * PI + 0.5 * PI)), 50 + Perf(y, 10.0 - 15.0 * sin(radian + 2.0 / size * PI + 0.5 * PI)),
+							Perf(x, 85.0 + 70.0 * cos(radian + 2.0 / size * PI + 0.5 * PI)), 50 + Perf(y, 80.0 - 15.0 * sin(radian + 2.0 / size * PI + 0.5 * PI)), SIH(1), FALSE);
+			DrawExtendGraph(Perf(x, 15.0 + 70.0 * cos(radian - 2.0 / size * PI + 0.5 * PI)), 50 + Perf(y, 10.0 - 15.0 * sin(radian - 2.0 / size * PI + 0.5 * PI)),
+							Perf(x, 85.0 + 70.0 * cos(radian - 2.0 / size * PI + 0.5 * PI)), 50 + Perf(y, 80.0 - 15.0 * sin(radian - 2.0 / size * PI + 0.5 * PI)), SIH(0), FALSE);
+			DrawExtendGraph(Perf(x, 15.0 + 70.0 * cos(radian + 0.5 * PI)), 50 + Perf(y, 10.0 - 15.0 * sin(radian + 0.5 * PI)),
+							Perf(x, 85.0 + 70.0 * cos(radian + 0.5 * PI)), 50 + Perf(y, 80.0 - 15.0 * sin(radian + 0.5 * PI)), SIH(2), FALSE);
 		}
 		else
 		{
-			DrawExtendGraph(Perf(x, 15.0 + 70.0 * cos(radian + 2.0 / size * PI + 0.5 * PI)), Perf(y, 10.0 + 15.0 * sin(radian + 2.0 / size * PI + 0.5 * PI)),
-				Perf(x, 85.0 + 70.0 * cos(radian + 2.0 / size * PI + 0.5 * PI)), Perf(y, 80.0 + 15.0 * sin(radian + 2.0 / size * PI + 0.5 * PI)), SIH(1), FALSE);
-			DrawExtendGraph(Perf(x, 15.0 + 70.0 * cos(radian + 0.5 * PI)), Perf(y, 10.0 + 15.0 * sin(radian + 0.5 * PI)),
-				Perf(x, 85.0 + 70.0 * cos(radian + 0.5 * PI)), Perf(y, 80.0 + 15.0 * sin(radian + 0.5 * PI)), SIH(2), FALSE);
-			DrawExtendGraph(Perf(x, 15.0 + 70.0 * cos(radian - 2.0 / size * PI + 0.5 * PI)), Perf(y, 10.0 + 15.0 * sin(radian - 2.0 / size * PI + 0.5 * PI)),
-				Perf(x, 85.0 + 70.0 * cos(radian - 2.0 / size * PI + 0.5 * PI)), Perf(y, 80.0 + 15.0 * sin(radian - 2.0 / size * PI + 0.5 * PI)), SIH(0), FALSE);
+			DrawExtendGraph(Perf(x, 15.0 + 70.0 * cos(radian + 2.0 / size * PI + 0.5 * PI)), 50 + Perf(y, 10.0 - 15.0 * sin(radian + 2.0 / size * PI + 0.5 * PI)),
+							Perf(x, 85.0 + 70.0 * cos(radian + 2.0 / size * PI + 0.5 * PI)), 50 + Perf(y, 80.0 - 15.0 * sin(radian + 2.0 / size * PI + 0.5 * PI)), SIH(1), FALSE);
+			DrawExtendGraph(Perf(x, 15.0 + 70.0 * cos(radian + 0.5 * PI)), 50 + Perf(y, 10.0 - 15.0 * sin(radian + 0.5 * PI)),
+							Perf(x, 85.0 + 70.0 * cos(radian + 0.5 * PI)), 50 + Perf(y, 80.0 - 15.0 * sin(radian + 0.5 * PI)), SIH(2), FALSE);
+			DrawExtendGraph(Perf(x, 15.0 + 70.0 * cos(radian - 2.0 / size * PI + 0.5 * PI)), 50 + Perf(y, 10.0 - 15.0 * sin(radian - 2.0 / size * PI + 0.5 * PI)),
+							Perf(x, 85.0 + 70.0 * cos(radian - 2.0 / size * PI + 0.5 * PI)), 50 + Perf(y, 80.0 - 15.0 * sin(radian - 2.0 / size * PI + 0.5 * PI)), SIH(0), FALSE);
 		}
 		break;
 	case StageSelect::STOP:
-		DrawExtendGraph(Perf(x, 15.0 + 70.0 * cos(radian + 2.0 / size * PI + 0.5 * PI)),	Perf(y, 10.0 + 15.0 * sin(radian + 2.0 / size * PI + 0.5 * PI)),
-			            Perf(x, 85.0 + 70.0 * cos(radian + 2.0 / size * PI + 0.5 * PI)),	Perf(y, 80.0 + 15.0 * sin(radian + 2.0 / size * PI + 0.5 * PI)), SIH(2), FALSE);
-		DrawExtendGraph(Perf(x, 15.0 + 70.0 * cos(radian - 2.0 / size * PI + 0.5 * PI)),	Perf(y, 10.0 + 15.0 * sin(radian - 2.0 / size * PI + 0.5 * PI)),
-						Perf(x, 85.0 + 70.0 * cos(radian - 2.0 / size * PI + 0.5 * PI)),	Perf(y, 80.0 + 15.0 * sin(radian - 2.0 / size * PI + 0.5 * PI)), SIH(1), FALSE);
-		DrawExtendGraph(Perf(x, 15.0 + 70.0 * cos(radian + 0.5 * PI)),	Perf(y, 10.0 + 15.0 * sin(radian + 0.5 * PI)),
-						Perf(x, 85.0 + 70.0 * cos(radian + 0.5 * PI)),	Perf(y, 80.0 + 15.0 * sin(radian + 0.5 * PI)), SIH(0), FALSE);
+		DrawExtendGraph(Perf(x, 15.0 + 70.0 * cos(radian + 2.0 / size * PI + 0.5 * PI)),	50 + Perf(y, 10.0 - 15.0 * sin(radian + 2.0 / size * PI + 0.5 * PI)),
+			            Perf(x, 85.0 + 70.0 * cos(radian + 2.0 / size * PI + 0.5 * PI)),	50 + Perf(y, 80.0 - 15.0 * sin(radian + 2.0 / size * PI + 0.5 * PI)), SIH(2), FALSE);
+		DrawExtendGraph(Perf(x, 15.0 + 70.0 * cos(radian - 2.0 / size * PI + 0.5 * PI)),	50 + Perf(y, 10.0 - 15.0 * sin(radian - 2.0 / size * PI + 0.5 * PI)),
+						Perf(x, 85.0 + 70.0 * cos(radian - 2.0 / size * PI + 0.5 * PI)),	50 + Perf(y, 80.0 - 15.0 * sin(radian - 2.0 / size * PI + 0.5 * PI)), SIH(1), FALSE);
+		DrawExtendGraph(Perf(x, 15.0 + 70.0 * cos(radian + 0.5 * PI)), 50 + Perf(y, 10.0 - 15.0 * sin(radian + 0.5 * PI)),
+						Perf(x, 85.0 + 70.0 * cos(radian + 0.5 * PI)), 50 + Perf(y, 80.0 - 15.0 * sin(radian + 0.5 * PI)), SIH(0), FALSE);
+
+		a = (time->GetTimeCount() * (4000 - time->GetTimeCount())) / 4000;
+		a = (a > 255) ? 255 : a;
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, a);
+		DrawExtendGraph(300, y - 350, x - 300, y - 50, stageImageHandle.at(selectStage).second, TRUE);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
 		break;
 	case StageSelect::DECISION:
-		DrawExtendGraph(0, 0, x, y, stageImageHandle.at(selectStage), FALSE);
+		DrawExtendGraph(Perf(x, 15.0), 50 + Perf(y, 10.0 - 15.0),
+			Perf(x, 85.0), 50 + Perf(y, 80.0 - 15.0), stageImageHandle.at(selectStage).first, FALSE);
+		DrawExtendGraph(300, y - 350, x - 300, y - 50, stageImageHandle.at(selectStage).second, TRUE);
 		if (time->GetTimeCount() < 1000)
 		{
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, a);
-			DrawExtendGraph(static_cast<int>(- a * 16 / 20.0),static_cast<int>( - a * 9 / 20.0), x + static_cast<int>(a * 16 / 20.0), y + static_cast<int>(a * 9 / 20.0), stageImageHandle.at(selectStage), FALSE);
+			DrawExtendGraph(static_cast<int>(-a * 16 / 20.0) + Perf(x, 15.0), static_cast<int>(-a * 9 / 20.0) + 50 + Perf(y, 10.0 - 15.0),
+				static_cast<int>(a * 16 / 20.0) + Perf(x, 85.0), static_cast<int>(a * 9 / 20.0) + 50 + Perf(y, 80.0 - 15.0), stageImageHandle.at(selectStage).first, FALSE);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 		else if (time->GetTimeCount() > 2490)

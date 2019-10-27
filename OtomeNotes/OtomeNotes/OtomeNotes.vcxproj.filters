@@ -93,6 +93,9 @@
     <ClCompile Include="Sources\Scenes\GameMain\Button.cpp">
       <Filter>ソース ファイル\Scenes\GameMain</Filter>
     </ClCompile>
+    <ClCompile Include="Sources\Particles\Hwhw.cpp">
+      <Filter>ソース ファイル\Particles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sources\MainController\GameData.h">
@@ -145,6 +148,9 @@
     </ClInclude>
     <ClInclude Include="Sources\Scenes\GameMain\Button.h">
       <Filter>ヘッダー ファイル\Scenes\GameMain</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Particles\Hwhw.h">
+      <Filter>ヘッダー ファイル\Particles</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
