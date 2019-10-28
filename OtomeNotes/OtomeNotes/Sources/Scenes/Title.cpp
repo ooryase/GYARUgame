@@ -5,9 +5,11 @@
 #include"StageSelect.h"
 
 Title::Title() : VirtualScene(),
-	titleGraphHandle(LoadGraph("Assets/Textures/Title/Title.jpg")),
-	textGraphHandle(LoadGraph("Assets/Textures/Title/ChargePlease.png")),
-	movieHandle(LoadGraph("Assets/Movies/gbf_mv_20170809.mp4"))
+	titleGraphHandle(LoadGraph("Assets/Textures/Title/Title.png")),
+	backGraphHandle(LoadGraph("Assets/Textures/Title/Title_back.png")),
+	textGraphHandle(LoadGraph("Assets/Textures/Title/Space.png")),
+	movieHandle(LoadGraph("Assets/Movies/gbf_mv_20170809.mp4")),
+	titleCallHandle(LoadSoundMem("Assets/Sounds/Voice/SystemVoice/titlecall3.mp3"))
 {
 	phase = TitlePhaseList::START;
 	movieSkip = false;
@@ -16,7 +18,10 @@ Title::Title() : VirtualScene(),
 Title::~Title()
 {
 	DeleteGraph(titleGraphHandle);
+	DeleteGraph(backGraphHandle);
+	DeleteGraph(textGraphHandle);
 	DeleteGraph(movieHandle);
+	DeleteGraph(titleCallHandle);
 }
 
 void Title::Update()
@@ -33,6 +38,7 @@ void Title::Update()
 			//time->Reset();
 			phase = TitlePhaseList::NEXT;
 			nextScene = std::make_shared<StageSelect>();
+			PlaySoundMem(titleCallHandle, DX_PLAYTYPE_BACK);
 
 		}
 #if _DEBUG		
@@ -85,12 +91,17 @@ void Title::DrawTitle() const
 	GetScreenState(&x, &y, &c);
 
 
-	DrawExtendGraph(300, 0, x - 300, y, titleGraphHandle, TRUE);
+
+	int i = time->GetTimeCount() % 20480 / 16;
+	DrawExtendGraph(i, 0, x + i, 190, backGraphHandle, TRUE);
+	DrawExtendGraph(i - x, 0, i, 190, backGraphHandle, TRUE);
+
+	DrawExtendGraph(0, 0, x, y, titleGraphHandle, TRUE);
 
 	auto a = static_cast<int>((std::cos(time->GetTimeCount() / 150.0) + 1.0) * 255.0);
 	a = (a > 255) ? 255 : a;
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, a);
-	DrawExtendGraph(x / 2 - 400, y / 3 * 2, x / 2 + 400, y / 3 * 2 + 200, textGraphHandle, TRUE);
+	DrawExtendGraph(x/ 2 - 320,y - 150,x / 2 + 320,y - 50, textGraphHandle, TRUE);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 

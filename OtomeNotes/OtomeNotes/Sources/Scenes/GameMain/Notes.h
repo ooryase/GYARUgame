@@ -4,6 +4,7 @@ class Notes
 {
 protected:
 	const int notesHandle;
+	const int krkrHandle;
 
 public:
 	enum EvalutionType
@@ -26,7 +27,7 @@ protected:
 
 	EvalutionType NotesEvalution(int justTime);
 public:
-	Notes(int _notesHandle,int _x,int _y);
+	Notes(int _notesHandle,int _krkrHandle,int _x,int _y);
 
 	virtual void Update(int deltaTime);
 	virtual void Draw() const;

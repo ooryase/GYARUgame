@@ -16,17 +16,25 @@
 class GameMain : public VirtualScene
 {
 private:
-	//ロードハンドル
+	////ロードハンドル
+
+	//Live2dモデル
 	int modelHandle;
+
+	//ファイル
 	int fileHandle;
+
+	//フォント
 	const int fontHandle;
-	const int buttonHandle;
+	const int largeFontHandle;
+
+	//テクスチャ
+	int buttonHandle[2];
 	int notesHandle[3];
 	const int longNotesHandle;
 	int backGroundHandle[3];
 	const int textFrameHandle;
-	const int SE_notesHandle;
-	int bgmHandle;
+	const int frameHandle;
 	int fullTextHandle[3];
 	int feverBackHandle[2];
 	int krkrHandle;
@@ -34,7 +42,13 @@ private:
 	const int gaugeHandle;
 	const int gaugeHandle2;
 
-	//CSVロード管理
+	//サウンド
+	const int SE_notesHandle;
+	int SE_resultHandle[3];
+	int resultVoiceHandle[3];
+	int bgmHandle;
+
+	////CSVロード管理
 	int waitTime;
 	char readText[256];
 	int popToJustTime; //ノーツ生成からジャストタイムまで(予兆)の時間
@@ -42,39 +56,45 @@ private:
 	std::queue<CharClass> waitTextQueue;
 	int textQueueWaitTime;
 
-	//ノーツ描画管理
+	////ノーツ描画管理
 	int textX, textY; //テキストの生成座標
 	int notesX, notesY; //ノーツの生成座標
 
-	//背景管理
+	////背景管理
 	int backGroundStep;
+	int backGroundTime;
 
-	//配列管理
+	////配列管理
 	std::vector<std::shared_ptr<PopText>> popText;
 	std::vector<std::shared_ptr<Notes>> notes;
 	std::vector<std::shared_ptr<VirtualParticle>> particles;
 	std::vector<std::shared_ptr<VirtualParticle>> backParticles;
 	std::vector<std::shared_ptr<Button>> buttons;
 
-	//スコア管理
+	////スコア管理
 	int score;
-	int scoreCount[3];
-	int scoreColor[3];
+	int scoreCount[4];
+	int scoreColor[4];
 	int feel;
 	int fever;
 	int feverTime;
+	std::string scoreName[4];
 
-	//リザルト用変数
+	////リザルト用変数
 	int scorePopCount;
 
-	//フェーズ管理
+	////フェーズ管理
 	enum class PhaseType
 	{
 		START,
 		MAIN,
-		RESULT
+		RESULT,
+		NEXT
 	};
 	PhaseType phase;
+
+	//キャラの名前
+	std::string charaName;
 
 public:
 	GameMain();
@@ -89,13 +109,17 @@ private:
 	void StartUpdate();
 	void MainUpdate();
 	void ResultUpdate();
+	void NextUpdate();
 
 	void StartDraw() const;
 	void MainDraw() const;
 	void ResultDraw() const;
+	void NextDraw() const;
 
 	void GaugeDraw(int x,int y) const;
 	void FeverDraw(int x, int y) const;
+
+	void ScoreDraw(int x, int y) const;
 
 	void CSVRead();
 	void QueueRead();

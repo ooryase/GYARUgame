@@ -6,19 +6,20 @@
 #include"GameMain.h"
 #include"../MainController/InputController.h"
 #include"../MainController/GameData.h"
+#include"Ending.h"
 
 GameMain::GameMain() : VirtualScene(),
 	fileHandle(FileRead_open("Assets/CSV/Notes.csv")),
 	fontHandle(LoadFontDataToHandle("Assets/Fonts/Senobi_m.dft",1)),
-	buttonHandle(LoadGraph("Assets/Textures/GameMain/Button.png")),
-	//notesHandle(LoadGraph("Assets/Textures/GameMain/Notes.png")),
+	largeFontHandle(LoadFontDataToHandle("Assets/Fonts/Senobi_m128.dft", 1)),
 	longNotesHandle(LoadGraph("Assets/Textures/GameMain/LongNotes.png")),
-	//osakabechankariHandle(LoadGraph("Assets/Textures/GameMain/Osakabechankari.png")),
 	textFrameHandle(LoadGraph("Assets/Textures/GameMain/TextFrame.png")),
-	SE_notesHandle(LoadSoundMem("Assets/Sounds/SE/Notes.mp3")),
+	frameHandle(LoadGraph("Assets/Textures/GameMain/Frame.png")),
+	SE_notesHandle(LoadSoundMem("Assets/Sounds/SE/note_normal.mp3")),
 	gaugeHandle(LoadGraph("Assets/Textures/GameMain/Gauge.png")),
 	gaugeHandle2(LoadGraph("Assets/Textures/GameMain/Gauge2.png"))
 {
+	LoadDivGraph("Assets/Textures/GameMain/Button.png", 2, 1, 2, 100, 100, buttonHandle);
 	notesHandle[0] = LoadGraph("Assets/Textures/GameMain/Notes.png");
 	notesHandle[1] = MakeScreen(100, 100, TRUE);
 	notesHandle[2] = MakeScreen(100, 100, TRUE);
@@ -26,18 +27,23 @@ GameMain::GameMain() : VirtualScene(),
 	int j = GraphFilterBlt(notesHandle[0],notesHandle[2], DX_GRAPH_FILTER_HSB,0,60,0,0);
 	bgmHandle = LoadSoundMem("Assets/Sounds/BGM/Himeka.wav");
 	LoadDivGraph("Assets/Textures/GameMain/FullTexture.png", 3, 1, 3, 640, 360, fullTextHandle);
-	LoadDivGraph("Assets/Textures/GameMain/Fever.png",2 , 1, 2, 640, 400, feverBackHandle);
+	LoadDivGraph("Assets/Textures/GameMain/Fever2.png",2 , 1, 2, 640, 360, feverBackHandle);
+	//feverBackHandle[1] = LoadGraph("Assets/Textures/GameMain/Fever2.png");
 	krkrHandle = LoadGraph("Assets/Textures/Particles/Star.png");
 	LoadDivGraph("Assets/Textures/Particles/Hwhw.png", 4, 1, 4, 100, 100, hwhwHandle);
+
+	SE_resultHandle[0] = LoadSoundMem("Assets/Sounds/Voice/SystemVoice/excellent.mp3");
+	SE_resultHandle[1] = LoadSoundMem("Assets/Sounds/Voice/SystemVoice/good.mp3");
+	SE_resultHandle[2] = LoadSoundMem("Assets/Sounds/Voice/SystemVoice/failling.mp3");
 
 	LoadSelectChara();
 
 	waitTime = 0;
 	popToJustTime = 1200;
 	textQueueWaitTime = popToJustTime - 200;
-	buttons.push_back(std::make_shared<Button>(buttonHandle, popToJustTime));
 
 	backGroundStep = 0;
+	backGroundTime = 10000;
 
 	int x, y, c;
 	GetScreenState(&x, &y, &c);
@@ -47,10 +53,15 @@ GameMain::GameMain() : VirtualScene(),
 	notesY = textY - 150;
 	
 	score = 0;
-	scoreCount[0] = scoreCount[1] = scoreCount[2] = 0;
+	scoreCount[0] = scoreCount[1] = scoreCount[2] = scoreCount[3] = 0;
 	scoreColor[0] = GetColor(255, 205, 100);
 	scoreColor[1] = GetColor(255, 255, 155);
 	scoreColor[2] = GetColor(205, 185, 235);
+	scoreColor[3] = GetColor(185, 185, 185);
+	scoreName[0] = "PARFECT";
+	scoreName[1] = "GOOD";
+	scoreName[2] = "BAD";
+	scoreName[3] = "MISS";
 	feel = 50;
 	fever = 0;
 
@@ -60,6 +71,7 @@ GameMain::GameMain() : VirtualScene(),
 	scorePopCount = 0;
 
 	time->TimeUpdate();
+	time->Reset();
 }
 
 GameMain::~GameMain()
@@ -67,7 +79,8 @@ GameMain::~GameMain()
 	Live2D_DeleteModel(modelHandle);
 	FileRead_close(fileHandle);
 	DeleteFontToHandle(fontHandle);
-	DeleteGraph(buttonHandle);
+	DeleteGraph(buttonHandle[0]);
+	DeleteGraph(buttonHandle[1]);
 	DeleteGraph(notesHandle[0]);
 	DeleteGraph(notesHandle[1]);
 	DeleteGraph(notesHandle[2]);
@@ -92,6 +105,9 @@ void GameMain::Update()
 		break;
 	case GameMain::PhaseType::RESULT:
 		ResultUpdate();
+		break;
+	case GameMain::PhaseType::NEXT:
+		NextUpdate();
 		break;
 	}
 }
@@ -123,12 +139,14 @@ void GameMain::MainUpdate()
 	CSVRead();
 
 	feverTime += time->GetDeltaTime();
+	backGroundTime += time->GetDeltaTime();
 
 
 	if (FileRead_eof(fileHandle) || InputController::getInstance().GetPush(KEY_INPUT_BACK))
 	{
 		time->Reset();
 		phase = PhaseType::RESULT;
+		StopSoundMem(bgmHandle);
 	}
 
 	for (auto&& var : popText)
@@ -151,7 +169,7 @@ void GameMain::MainUpdate()
 				score += 100;
 				AddFeel(15);
 				particles.push_back(std::make_shared<EvalutionText>(i, 600, fontHandle, "GOOD", GetColor(255, 205, 100)));
-				particles.push_back(std::make_shared<NotesButton>(i, notesY, buttonHandle));
+				particles.push_back(std::make_shared<NotesButton>(i, notesY, buttonHandle[0]));
 				particles.push_back(std::make_shared<Krkr>(i, notesY, krkrHandle, 0, 2.0));
 				backParticles.push_back(std::make_shared<Hwhw>(640, 150, hwhwHandle[1], 0, 3.0));
 				Live2D_Model_StartMotion(modelHandle, "Good", 0);
@@ -160,7 +178,7 @@ void GameMain::MainUpdate()
 				score += 200;
 				AddFeel(10);
 				particles.push_back(std::make_shared<EvalutionText>(i, 600, fontHandle, "PERFECT", GetColor(255, 255, 155)));
-				particles.push_back(std::make_shared<NotesButton>(i, notesY, buttonHandle));
+				particles.push_back(std::make_shared<NotesButton>(i, notesY, buttonHandle[0]));
 				particles.push_back(std::make_shared<Krkr>(i, notesY, krkrHandle, 0, 2.0));
 				backParticles.push_back(std::make_shared<Hwhw>(640, 150, hwhwHandle[0], 0, 3.0));
 				Live2D_Model_StartMotion(modelHandle, "Parfect", 0);
@@ -168,7 +186,7 @@ void GameMain::MainUpdate()
 			case Notes::EvalutionType::BAD:
 				AddFeel(-8);
 				particles.push_back(std::make_shared<EvalutionText>(i, 600, fontHandle, "BAD", GetColor(205, 185, 235)));
-				particles.push_back(std::make_shared<NotesButton>(i, notesY, buttonHandle));
+				particles.push_back(std::make_shared<NotesButton>(i, notesY, buttonHandle[0]));
 				backParticles.push_back(std::make_shared<Hwhw>(640, 150, hwhwHandle[2], 0, 3.0));
 				Live2D_Model_StartMotion(modelHandle, "Bad", 0);
 				break;
@@ -220,7 +238,54 @@ void GameMain::MainUpdate()
 
 void GameMain::ResultUpdate()
 {
-	if (time->GetTimeCount() > 1000 + scorePopCount * 500 && scorePopCount < 3)
+	if (time->GetTimeCount() > 3000 && scorePopCount == 0)
+	{
+		scorePopCount++;
+		if (fever == 1)
+		{
+			backParticles.push_back(std::make_shared<Hwhw>(640, 150, hwhwHandle[0], 0, 3.0));
+			Live2D_Model_StartMotion(modelHandle, "Parfect", 0);
+			PlaySoundMem(resultVoiceHandle[0], DX_PLAYTYPE_BACK);
+		}
+		else if (fever == 0)
+		{
+			backParticles.push_back(std::make_shared<Hwhw>(640, 150, hwhwHandle[1], 0, 3.0));
+			Live2D_Model_StartMotion(modelHandle, "Good", 0);
+			PlaySoundMem(resultVoiceHandle[1], DX_PLAYTYPE_BACK);
+		}
+		else if (fever == -1)
+		{
+			backParticles.push_back(std::make_shared<Hwhw>(640, 150, hwhwHandle[1], 0, 3.0));
+			Live2D_Model_StartMotion(modelHandle, "Bad", 0);
+			PlaySoundMem(resultVoiceHandle[2], DX_PLAYTYPE_BACK);
+		}
+	}
+	else if ((time->GetTimeCount() > 10000 && InputController::getInstance().GetPush(KEY_INPUT_Z)) ||
+		time->GetTimeCount() > 20000)
+	{
+		phase = PhaseType::NEXT;
+		time->Reset();
+	}
+
+
+	for (auto&& var : particles)
+		var->Update(time->GetDeltaTime());
+
+	auto itr =
+		std::remove_if(particles.begin(), particles.end(), [](
+			std::shared_ptr<VirtualParticle>am) {return  am->Dead; });
+	particles.erase(itr, particles.end());
+
+	for (auto&& var : backParticles)
+		var->Update(time->GetDeltaTime());
+
+	auto itrp =
+		std::remove_if(backParticles.begin(), backParticles.end(), [](
+			std::shared_ptr<VirtualParticle>am) {return  am->Dead; });
+	backParticles.erase(itrp, backParticles.end());
+
+
+	/*if (time->GetTimeCount() > 1000 + scorePopCount * 500 && scorePopCount < 3)
 	{
 		particles.push_back(std::make_shared<Krkr>(200, 270 - scorePopCount * 60, krkrHandle, 120, 5.0));
 		scorePopCount++;
@@ -232,7 +297,7 @@ void GameMain::ResultUpdate()
 	auto itr =
 		std::remove_if(particles.begin(), particles.end(), [](
 			std::shared_ptr<VirtualParticle>am) {return  am->Dead; });
-	particles.erase(itr, particles.end());
+	particles.erase(itr, particles.end());*/
 
 	// モーション再生が終了していたらアイドリングモーションをランダムで再生
 	if (Live2D_Model_IsMotionFinished(modelHandle) == TRUE)
@@ -243,6 +308,14 @@ void GameMain::ResultUpdate()
 	// モデルの状態を60分の1秒分進める
 	Live2D_Model_Update(modelHandle, time->GetDeltaTime() / 1000.0f);
 
+}
+
+void GameMain::NextUpdate()
+{
+	if (time->GetTimeCount() > 510)
+	{
+		nextScene = std::make_shared<Ending>();
+	}
 }
 
 void GameMain::Draw() const
@@ -258,6 +331,9 @@ void GameMain::Draw() const
 	case GameMain::PhaseType::RESULT:
 		ResultDraw();
 		break;
+	case GameMain::PhaseType::NEXT:
+		NextDraw();
+		break;
 	}
 }
 
@@ -267,25 +343,27 @@ void GameMain::StartDraw() const
 	GetScreenState(&x, &y, &c);
 
 	DrawExtendGraph(0, 0, x, y, backGroundHandle[backGroundStep], FALSE);
-	//DrawExtendGraph(x / 2 - 153, 100, x / 2 + 153, 100 + 616, charaHandle, TRUE);
 
-	// Live2D描画の開始
-	Live2D_RenderBegin();
-
-	// モデルの描画
-	Live2D_Model_Draw(modelHandle);
-
-	// Live2D描画の終了
-	Live2D_RenderEnd();
-
-	if (time->GetTimeCount() < 1020)
+	if(time->GetTimeCount() < 300)
+		DrawExtendGraph(0, 0, x, y, fullTextHandle[0], FALSE);
+	else if (time->GetTimeCount() < 1020)
 	{
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - time->GetTimeCount() / 4);
+		// Live2D描画の開始
+		Live2D_RenderBegin();
+
+		// モデルの描画
+		Live2D_Model_Draw(modelHandle);
+
+		// Live2D描画の終了
+		Live2D_RenderEnd();
+
+		DrawExtendGraph(50, y - 300, x - 50, y, textFrameHandle, TRUE);
+		DrawStringToHandle(100, y - 280, charaName.c_str(), GetColor(255,255,255), fontHandle);
+
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - (time->GetTimeCount() - 300) / 3);
 		DrawExtendGraph(0, 0, x, y, fullTextHandle[0], FALSE);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
-
-	DrawExtendGraph(50, y - 300, x - 50, y, textFrameHandle, TRUE);
 
 }
 
@@ -294,7 +372,13 @@ void GameMain::MainDraw() const
 	int x, y, c;
 	GetScreenState(&x, &y, &c);
 
-	DrawExtendGraph(0, 0, x, y, backGroundHandle[backGroundStep], FALSE);
+	if (backGroundTime < 1280)
+	{
+		DrawExtendGraph(backGroundTime, 0, x + backGroundTime, y, backGroundHandle[backGroundStep - 1], FALSE);
+		DrawExtendGraph(backGroundTime - 1280, 0, x + backGroundTime - 1280, y, backGroundHandle[backGroundStep], FALSE);
+	}
+	else
+		DrawExtendGraph(0, 0, x, y, backGroundHandle[backGroundStep], FALSE);
 	FeverDraw(x,y);
 
 	for (auto&& var : backParticles)
@@ -310,6 +394,7 @@ void GameMain::MainDraw() const
 	Live2D_RenderEnd();
 
 	DrawExtendGraph(50, y - 300, x - 50, y, textFrameHandle, TRUE);
+	DrawStringToHandle(100, y - 280, charaName.c_str(), GetColor(255, 255, 255), fontHandle);
 
 	GaugeDraw(x, y);
 
@@ -317,7 +402,6 @@ void GameMain::MainDraw() const
 	for (auto&& var : popText)
 		var->Draw(fontHandle);
 
-	//DrawExtendGraph(buttonXTimer / 10 + 30, notesY - 50, buttonXTimer / 10 + 130, notesY + 50, buttonHandle, TRUE);
 	for (auto&& var : notes)
 		var->Draw();
 
@@ -334,20 +418,44 @@ void GameMain::ResultDraw() const
 	int x, y, c;
 	GetScreenState(&x, &y, &c);
 
-	if (time->GetTimeCount() < x / 2)
+	DrawExtendGraph(0, 0, x, y, backGroundHandle[backGroundStep], FALSE);
+
+	FeverDraw(x, y);
+
+	for (auto&& var : backParticles)
+		var->Draw();
+
+
+
+
+	// Live2D描画の開始
+	Live2D_RenderBegin();
+
+	// モデルの描画
+	Live2D_Model_Draw(modelHandle);
+
+	// Live2D描画の終了
+	Live2D_RenderEnd();
+
+	if (time->GetTimeCount() < 1000)
 	{
-		DrawExtendGraph(0, 0, x, y, backGroundHandle[backGroundStep], FALSE);
-		DrawExtendGraph(-x + time->GetTimeCount() * 2, 0, time->GetTimeCount() * 2, y, fullTextHandle[2], FALSE);
+		DrawExtendGraph(50, y - 300 + time->GetTimeCount() / 2, x - 50, y + time->GetTimeCount() / 2, textFrameHandle, TRUE);
 	}
-	else
-		DrawExtendGraph(0,0, x, y, fullTextHandle[2], FALSE);
 
-	if (time->GetTimeCount() < x / 2)
+
+	if (time->GetTimeCount() > 6000)
 	{
-		DrawExtendGraph(50 + time->GetTimeCount() * 2, y - 300, x - 50 + time->GetTimeCount() * 2, y, textFrameHandle, TRUE);
+		if(fever == 1)
+			DrawStringToHandle(740, 300, "EXCELLENT", scoreColor[0], largeFontHandle);
+		else if (fever == 0)
+			DrawStringToHandle(740, 300, "GOOD", scoreColor[1], largeFontHandle);
+		else if (fever == -1)
+			DrawStringToHandle(740, 300, "FAILLING", scoreColor[2], largeFontHandle);
 	}
+	ScoreDraw(x,y);
 
 
+	/*
 
 	//PARFECT,GOOD,BAD の表示
 	if (time->GetTimeCount() > 2200)
@@ -371,6 +479,8 @@ void GameMain::ResultDraw() const
 			DrawStringToHandle(350, 270 - i * 60, ScoreCountTostring(2 - i, 1, 1).c_str(), scoreColor[2 - i], fontHandle);
 	}
 
+	*/
+
 	//スコアの表示
 	//if(time->GetTimeCount() < x / 2)
 
@@ -387,9 +497,19 @@ void GameMain::ResultDraw() const
 			115 + x / 4, (y - 400) * (100 - feel) / 100 + 90, gaugeHandle2, TRUE);
 	}*/
 
-
 	for (auto&& var : particles)
 		var->Draw();
+
+}
+
+void GameMain::NextDraw() const
+{
+	int x, y, c;
+	GetScreenState(&x, &y, &c);
+
+	DrawExtendGraph(0, 0, x, y, backGroundHandle[backGroundStep], FALSE);
+
+	FeverDraw(x, y);
 
 	// Live2D描画の開始
 	Live2D_RenderBegin();
@@ -400,63 +520,176 @@ void GameMain::ResultDraw() const
 	// Live2D描画の終了
 	Live2D_RenderEnd();
 
+
+
+	if (fever == 1)
+		DrawStringToHandle(740, 300, "EXCELLENT", scoreColor[0], largeFontHandle);
+	else if (fever == 0)
+		DrawStringToHandle(740, 300, "GOOD", scoreColor[1], largeFontHandle);
+	else if (fever == -1)
+		DrawStringToHandle(740, 300, "FAILLING", scoreColor[2], largeFontHandle);
+	
+	for (int i = 0; i < 4; i++)
+	{
+		DrawExtendGraph(50, y - 320 + i * 60, 350, y - 260 + i * 60, frameHandle, TRUE);
+		DrawStringToHandle(60, y - 310 + i * 60, scoreName[i].c_str(), scoreColor[i], fontHandle);
+		DrawStringToHandle(240, y - 310 + i * 60,
+			ScoreCountTostring(i, 1, 1).c_str(), scoreColor[i], fontHandle);
+	}
+	DrawExtendGraph(50, y - 420, 350, y - 340, frameHandle, TRUE);
+	DrawStringToHandle(60, y - 400, "SCORE", GetColor(255, 255, 255), fontHandle);
+	DrawStringToHandle(240, y - 400,
+		ScoreCountTostring(5, 1, 1).c_str(), GetColor(255, 255, 255), fontHandle);
+
+	if (time->GetTimeCount() < 510)
+	{
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, time->GetTimeCount() / 2);
+		DrawBox(0, 0, x, y, GetColor(255, 255, 255), TRUE);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	}
+	else
+		DrawBox(0, 0, x, y, GetColor(255, 255, 255), TRUE);
+
 }
 
 void GameMain::GaugeDraw(int x,int y) const
 {
-
 	int destHandle;
 	destHandle = MakeScreen(50, 720, TRUE);
 
 	switch (fever)
 	{
 	case 0:
-		DrawExtendGraph(50, 50, 100, y - 350, gaugeHandle, TRUE);
+		DrawExtendGraph(x - 120, 50, x - 50, y - 300, gaugeHandle, TRUE);
 		break;
 	case 1:
 		GraphFilterBlt(gaugeHandle, destHandle, DX_GRAPH_FILTER_HSB, 0, 70, 120, 30);
-		DrawExtendGraph(50, 50, 100, y - 350, destHandle, TRUE);
+		DrawExtendGraph(x -  120, 50, x  - 50, y - 300, destHandle, TRUE);
 		break;
 	case -1:
 		GraphFilterBlt(gaugeHandle, destHandle, DX_GRAPH_FILTER_HSB, 0, -60, 100, 0);
-		DrawExtendGraph(50, 50, 100, y - 350, destHandle, TRUE);
+		DrawExtendGraph(x - 120, 50, x - 50, y - 300, destHandle, TRUE);
 		break;
 	}
-	DrawExtendGraph(35, (y - 400) * (100 - feel) / 100 + 10, 115, (y - 400) * (100 - feel) / 100 + 90, gaugeHandle2, TRUE);
+	DrawExtendGraph(x -  135, (y - 350) * (100 - feel) / 100 + 10, x - 35, (y - 350) * (100 - feel) / 100 + 90, gaugeHandle2, TRUE);
 }
 
 void GameMain::FeverDraw(int x, int y) const
 {
 	if (fever == 0)
 		return;
+
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 125 + static_cast<int>(cos(feverTime / 370.0) * 120));
 	int yy = static_cast<int>( sin(feverTime / 500.0) * 10.0);
 	DrawExtendGraph(0, -10 + yy, x, y + 10 + yy, feverBackHandle[1 - (fever == -1)], TRUE);
+	
+	//SetDrawBlendMode(DX_BLENDMODE_ADD, 125 + static_cast<int>(cos(feverTime / 370.0) * 120 + 3.0));
+	//DrawExtendGraph(0, -10 - yy, x, y + 10 - yy, feverBackHandle[1 - (fever == -1)], TRUE);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+}
+
+void GameMain::ScoreDraw(int x, int y) const
+{
+	if (time->GetTimeCount() < 6000)
+		return;
+
+	if (time->GetTimeCount() < 6510)
+	{
+		int temp = (6510 - time->GetTimeCount()) / 2;
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - temp);
+		for (int i = 0; i < 4; i++)
+		{
+			DrawExtendGraph(50, y - 320 + i * 60 + temp, 350, y - 260 + i * 60 + temp, frameHandle, TRUE);
+			DrawStringToHandle(60, y - 310 + i * 60 + temp, scoreName[i].c_str(), scoreColor[i], fontHandle);
+			DrawStringToHandle(240, y - 310 + i * 60 + temp,
+				ScoreCountTostring(i, 0,1).c_str(), scoreColor[i], fontHandle);
+		}
+
+		DrawExtendGraph(50, y - 420 + temp, 350, y - 340 + temp, frameHandle, TRUE);
+		DrawStringToHandle(60, y - 400 + temp, "SCORE", GetColor(255,255,255), fontHandle);
+		DrawStringToHandle(240, y - 400 + temp,
+			ScoreCountTostring(5, 0, 1).c_str(), GetColor(255, 255, 255), fontHandle);
+
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+	}
+	else if(time->GetTimeCount() < 7010)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			DrawExtendGraph(50, y - 320 + i * 60, 350, y - 260 + i * 60, frameHandle, TRUE);
+			DrawStringToHandle(60, y - 310 + i * 60, scoreName[i].c_str(), scoreColor[i], fontHandle);
+			DrawStringToHandle(240, y - 310 + i * 60, 
+				ScoreCountTostring(i,time->GetTimeCount() - 6510,500).c_str(), scoreColor[i], fontHandle);
+		}	
+		DrawExtendGraph(50, y - 420, 350, y - 340, frameHandle, TRUE);
+		DrawStringToHandle(60, y - 400, "SCORE", GetColor(255, 255, 255), fontHandle);
+		DrawStringToHandle(240, y - 400,
+			ScoreCountTostring(5, time->GetTimeCount() - 6510,500).c_str(), GetColor(255, 255, 255), fontHandle);
+	}
+	else
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			DrawExtendGraph(50, y - 320 + i * 60, 350, y - 260 + i * 60, frameHandle, TRUE);
+			DrawStringToHandle(60, y - 310 + i * 60, scoreName[i].c_str(), scoreColor[i], fontHandle);
+			DrawStringToHandle(240, y - 310 + i * 60,
+				ScoreCountTostring(i, 1,1).c_str(), scoreColor[i], fontHandle);
+		}
+		DrawExtendGraph(50, y - 420, 350, y - 340, frameHandle, TRUE);
+		DrawStringToHandle(60, y - 400, "SCORE", GetColor(255, 255, 255), fontHandle);
+		DrawStringToHandle(240, y - 400,
+			ScoreCountTostring(5, 1, 1).c_str(), GetColor(255, 255, 255), fontHandle);
+	}
+
 }
 
 void GameMain::LoadSelectChara()
 {
+	//Himeka
 	if (GameData::getInstance().Stage == 0)
 	{
 		modelHandle = Live2D_LoadModel("Assets/Live2d/Himeka/Himeka.model3.json");
 		LoadDivGraph("Assets/Textures/GameMain/HimekaBackGround.png", 3, 1, 3, 640, 360, backGroundHandle);
 
-		Live2D_Model_SetExtendRate(modelHandle, 1.6f,1.6f);
-		Live2D_Model_SetTranslate(modelHandle, 0.0f, -100.0f);
+		Live2D_Model_SetExtendRate(modelHandle, 1.5f,1.5f);
+		Live2D_Model_SetTranslate(modelHandle, 0.0f, -110.0f);
+
+		resultVoiceHandle[0] = LoadSoundMem("Assets/Sounds/Voice/Himeka/r1_01.wav");
+		resultVoiceHandle[1] = LoadSoundMem("Assets/Sounds/Voice/Himeka/r2_01.wav");
+		resultVoiceHandle[2] = LoadSoundMem("Assets/Sounds/Voice/Himeka/r3_01.wav");
+
+		charaName = "刑部ちゃん";
 	}
+	//Himari
 	else if (GameData::getInstance().Stage == 1)
 	{
-		modelHandle = Live2D_LoadModel("Assets/Live2d/Himeka/Himeka.model3.json");
+		modelHandle = Live2D_LoadModel("Assets/Live2d/Mahiru/mahiru.model3.json");
 		LoadDivGraph("Assets/Textures/GameMain/HimekaBackGround.png", 3, 1, 3, 640, 360, backGroundHandle);
+
+		Live2D_Model_SetExtendRate(modelHandle, 1.5f, 1.5f);
+		Live2D_Model_SetTranslate(modelHandle, 0.0f, -110.0f);
+
+		resultVoiceHandle[0] = LoadSoundMem("Assets/Sounds/Voice/Himeka/r1_01.wav");
+		resultVoiceHandle[1] = LoadSoundMem("Assets/Sounds/Voice/Himeka/r2_01.wav");
+		resultVoiceHandle[2] = LoadSoundMem("Assets/Sounds/Voice/Himeka/r3_01.wav");
+
+		charaName = "委員長";
 	}
+	//Manamii
 	else if(GameData::getInstance().Stage == 2)
 	{
 		modelHandle = Live2D_LoadModel("Assets/Live2d/Manami/manami.model3.json");
 		LoadDivGraph("Assets/Textures/GameMain/HimekaBackGround.png", 3, 1, 3, 640, 360, backGroundHandle);
 
-		Live2D_Model_SetExtendRate(modelHandle, 1.3f, 1.3f);
-		Live2D_Model_SetTranslate(modelHandle, 0.0f, -60.0f);
+		Live2D_Model_SetExtendRate(modelHandle, 1.5f, 1.5f);
+		Live2D_Model_SetTranslate(modelHandle, 0.0f, -90.0f);
+
+		resultVoiceHandle[0] = LoadSoundMem("Assets/Sounds/Voice/Himeka/r1_01.wav");
+		resultVoiceHandle[1] = LoadSoundMem("Assets/Sounds/Voice/Himeka/r2_01.wav");
+		resultVoiceHandle[2] = LoadSoundMem("Assets/Sounds/Voice/Himeka/r3_01.wav");
+
+		charaName = "エロ師匠";
 	}
 }
 
@@ -502,13 +735,13 @@ void GameMain::CSVRead()
 void GameMain::NotesPush(char _notesType)
 {
 	if (readText[1] == 'N')
-		notes.push_back(std::make_shared<Notes>(notesHandle[0], notesX, notesY));
+		notes.push_back(std::make_shared<Notes>(notesHandle[0],buttonHandle[1], notesX, notesY));
 	else if (readText[1] == 'L')
-		notes.push_back(std::make_shared<LongNotes>(notesHandle[1],notesX,notesY,
+		notes.push_back(std::make_shared<LongNotes>(notesHandle[1], buttonHandle[1],notesX,notesY,
 		(readText[10] - '0') * 1000 + (readText[11] - '0') * 100 + (readText[12] - '0') * 10 + (readText[13] - '0'),
 			longNotesHandle));
 	else if (readText[1] == 'R')
-		notes.push_back(std::make_shared<RepeatedNotes>(notesHandle[2], notesX, notesY,
+		notes.push_back(std::make_shared<RepeatedNotes>(notesHandle[2], buttonHandle[1], notesX, notesY,
 		(readText[10] - '0') * 1000 + (readText[11] - '0') * 100 + (readText[12] - '0') * 10 + (readText[13] - '0'),
 			longNotesHandle));
 }
@@ -536,6 +769,7 @@ void GameMain::QueueRead()
 	else if (text[8] == 'B')
 	{
 		backGroundStep++;
+		backGroundTime = 0;
 	}
 
 	int addTime = (text[3] - '0') * 1000
@@ -565,7 +799,11 @@ void GameMain::AddFeel(int addFeel)
 
 std::string GameMain::ScoreCountTostring(int num, int numerator, int denominator) const
 {
-	int count = scoreCount[num] * numerator / denominator;
+	int count;
+	if (num == 5)
+		count = score * numerator / denominator;
+	else
+		count = scoreCount[num] * numerator / denominator;
 	auto c0 = 3;
 	c0 -= (count == 0) ? 0 : static_cast<int>(std::log10(count));
 	std::string s;

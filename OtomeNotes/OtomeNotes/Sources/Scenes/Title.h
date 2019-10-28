@@ -5,12 +5,15 @@ class Title : public VirtualScene
 {
 private:
 	const int titleGraphHandle;
+	const int backGraphHandle;
 	const int textGraphHandle;
 	const int movieHandle;
+	const int titleCallHandle;
 
 	enum TitlePhaseList
 	{
 		START,
+		DECISION,
 		MOVIE,
 		NEXT
 	};

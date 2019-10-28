@@ -7,7 +7,8 @@
 
 
 StageSelect::StageSelect() : VirtualScene(),
-	PI(3.14159265358979323846)
+	PI(3.14159265358979323846),
+	infoVoiceHandle(LoadSoundMem("Assets/Sounds/Voice/SystemVoice/situation1.mp3"))
 {
 	stageImageHandle.push_back(std::make_pair(LoadGraph("Assets/Textures/StageSelect/Stage1.jpg"),
 		LoadGraph("Assets/Textures/StageSelect/font1.png")));
@@ -41,6 +42,7 @@ void StageSelect::Update()
 		radian += time->GetDeltaTime() / 3000.0 * 2.0 * PI;
 		if (time->GetTimeCount() > 3000)
 		{
+			PlaySoundMem(infoVoiceHandle, DX_PLAYTYPE_BACK);
 			radian = 2.0 * PI;
 			rotatePhase = RoratePhase::STOP;
 			time->Reset();
@@ -149,14 +151,14 @@ void StageSelect::Draw() const
 		a = (time->GetTimeCount() * (4000 - time->GetTimeCount())) / 4000;
 		a = (a > 255) ? 255 : a;
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, a);
-		DrawExtendGraph(300, y - 350, x - 300, y - 50, stageImageHandle.at(selectStage).second, TRUE);
+		DrawExtendGraph(150, y - 450, x - 150, y - 50, stageImageHandle.at(selectStage).second, TRUE);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 		break;
 	case StageSelect::DECISION:
 		DrawExtendGraph(Perf(x, 15.0), 50 + Perf(y, 10.0 - 15.0),
 			Perf(x, 85.0), 50 + Perf(y, 80.0 - 15.0), stageImageHandle.at(selectStage).first, FALSE);
-		DrawExtendGraph(300, y - 350, x - 300, y - 50, stageImageHandle.at(selectStage).second, TRUE);
+		DrawExtendGraph(150, y - 450, x - 150, y - 50, stageImageHandle.at(selectStage).second, TRUE);
 		if (time->GetTimeCount() < 1000)
 		{
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, a);

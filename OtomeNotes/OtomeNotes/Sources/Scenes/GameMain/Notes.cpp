@@ -1,8 +1,9 @@
 #include"Notes.h"
 #include"../../MainController/InputController.h"
 
-Notes::Notes(int _notesHandle,int _x, int _y) :
+Notes::Notes(int _notesHandle,int _krkrHandle, int _x, int _y) :
 	notesHandle(_notesHandle),
+	krkrHandle(_krkrHandle),
 	x(_x),
 	y(_y)
 {
@@ -32,17 +33,18 @@ void Notes::Update(int deltaTime)
 
 void Notes::Draw() const
 {
-	/*int rateS = static_cast<int>(80.0 * (1.0 - time / static_cast<double>(popToJustTime)));
+	if (time < 510)
+	{
+		SetDrawBlendMode(DX_BLENDMODE_ADD, time / 2);
+		DrawGraph(x - 50, y - 50, notesHandle, TRUE);
 
-	DrawExtendGraph(x - 50, y - 50 - rateS * 5, x + 50, y  + 50 - rateS * 5, notesHandle, TRUE);
 
-
-
-	int rate = static_cast<int>(80.0 * (1.0 - time / static_cast<double>(popToJustTime)));
-	DrawExtendGraph(x - 50 - rate, y - 50 - rate, x + 50 + rate, y + 50 + rate, notesHandle, TRUE);
-	*/
-	DrawExtendGraph(x - 50, y - 50, x + 50, y + 50, notesHandle, TRUE);
-
+		SetDrawBlendMode(DX_BLENDMODE_ADD, 255 - abs(255 - time));
+		DrawExtendGraph(x - 60, y - 60, x + 60, y + 60, krkrHandle, TRUE);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	}
+	else
+		DrawGraph(x - 50, y - 50, notesHandle, TRUE);
 }
 
 Notes::EvalutionType Notes::NotesEvalution(int justTime)

@@ -134,6 +134,7 @@
     <ClCompile Include="Sources\Particles\Krkr.cpp" />
     <ClCompile Include="Sources\Particles\NotesButton.cpp" />
     <ClCompile Include="Sources\Particles\VirtualParticle.cpp" />
+    <ClCompile Include="Sources\Scenes\Ending.cpp" />
     <ClCompile Include="Sources\Scenes\GameMain.cpp" />
     <ClCompile Include="Sources\Scenes\GameMain\Button.cpp" />
     <ClCompile Include="Sources\Scenes\GameMain\LongNotes.cpp" />
@@ -154,6 +155,7 @@
     <ClInclude Include="Sources\Particles\Krkr.h" />
     <ClInclude Include="Sources\Particles\NotesButton.h" />
     <ClInclude Include="Sources\Particles\VirtualParticle.h" />
+    <ClInclude Include="Sources\Scenes\Ending.h" />
     <ClInclude Include="Sources\Scenes\GameMain.h" />
     <ClInclude Include="Sources\Scenes\GameMain\Button.h" />
     <ClInclude Include="Sources\Scenes\GameMain\LongNotes.h" />
