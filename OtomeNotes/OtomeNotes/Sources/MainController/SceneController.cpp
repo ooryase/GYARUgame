@@ -1,13 +1,12 @@
 #include<iostream>
 #include"DxLib.h"
 #include"SceneController.h"
-#include"../Scenes/Title.h"
-#include"../Scenes/GameMain.h"
+#include"../Scenes/Attention.h"
 #include"InputController.h"
 
 SceneController::SceneController()
 {
-	currentScene = std::make_shared<Title>();
+	currentScene = std::make_shared<Attention>();
 
 	InputController::getInstance().Init();
 }

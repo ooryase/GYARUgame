@@ -8,10 +8,16 @@ private:
 	std::vector<std::pair<int,int>> stageImageHandle;
 	int loadHandle;
 	const int infoVoiceHandle;
+	const int bgmHandle;
+	const int pushSeHandle;
+	const int backGraphHandle;
+	const int backGraph2Handle;
 
 	double radian;
 	const double PI;
 	int selectStage;
+
+	int backTime;
 
 	enum RoratePhase
 	{

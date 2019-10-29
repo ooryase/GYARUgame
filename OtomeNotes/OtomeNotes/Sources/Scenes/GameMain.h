@@ -12,6 +12,7 @@
 #include"../Particles/NotesButton.h"
 #include"../Particles/Krkr.h"
 #include"../Particles/Hwhw.h"
+#include"../Particles/Doyon.h"
 
 class GameMain : public VirtualScene
 {
@@ -26,6 +27,7 @@ private:
 
 	//フォント
 	const int fontHandle;
+	const int mFontHandle;
 	const int largeFontHandle;
 
 	//テクスチャ
@@ -47,6 +49,7 @@ private:
 	int SE_resultHandle[3];
 	int resultVoiceHandle[3];
 	int bgmHandle;
+	const int bgmResultHandle;
 
 	////CSVロード管理
 	int waitTime;
@@ -124,6 +127,7 @@ private:
 	void CSVRead();
 	void QueueRead();
 	void NotesPush(char _notesType);
+	void NotesCheck();
 
 	void AddFeel(int addFeel);
 	//scoreCountの番号、分子、分母

@@ -8,7 +8,11 @@
 
 StageSelect::StageSelect() : VirtualScene(),
 	PI(3.14159265358979323846),
-	infoVoiceHandle(LoadSoundMem("Assets/Sounds/Voice/SystemVoice/situation1.mp3"))
+	backGraphHandle(LoadGraph("Assets/Textures/Title/Title.png")),
+	backGraph2Handle(LoadGraph("Assets/Textures/Title/Title_back.png")),
+	infoVoiceHandle(LoadSoundMem("Assets/Sounds/Voice/SystemVoice/situation1.mp3")),
+	bgmHandle(LoadSoundMem("Assets/Sounds/BGM/StageSelect.mp3")),
+	pushSeHandle(LoadSoundMem("Assets/Sounds/SE/start3.mp3"))
 {
 	stageImageHandle.push_back(std::make_pair(LoadGraph("Assets/Textures/StageSelect/Stage1.jpg"),
 		LoadGraph("Assets/Textures/StageSelect/font1.png")));
@@ -21,6 +25,10 @@ StageSelect::StageSelect() : VirtualScene(),
 	radian = 0.0;
 	selectStage = 0;
 	rotatePhase = RoratePhase::START;
+
+	backTime = 0;
+	PlaySoundMem(bgmHandle, DX_PLAYTYPE_LOOP);
+
 }
 
 StageSelect::~StageSelect()
@@ -30,17 +38,26 @@ StageSelect::~StageSelect()
 		DeleteGraph(s.first);
 		DeleteGraph(s.second);
 	}
+
+	DeleteGraph(backGraphHandle);
+	DeleteGraph(backGraph2Handle);
+
+	StopSoundMem(bgmHandle);
+	DeleteSoundMem(bgmHandle);
+	DeleteSoundMem(infoVoiceHandle);
+	DeleteSoundMem(pushSeHandle);
 }
 
 void StageSelect::Update()
 {
 	time->TimeUpdate();
+	backTime += time->GetDeltaTime();
 
 	switch (rotatePhase)
 	{
 	case StageSelect::START:
-		radian += time->GetDeltaTime() / 3000.0 * 2.0 * PI;
-		if (time->GetTimeCount() > 3000)
+		//radian += time->GetDeltaTime() / 3000.0 * 2.0 * PI;
+		if (time->GetTimeCount() > 510)
 		{
 			PlaySoundMem(infoVoiceHandle, DX_PLAYTYPE_BACK);
 			radian = 2.0 * PI;
@@ -52,8 +69,9 @@ void StageSelect::Update()
 		RotateUpdate();
 		break;
 	case StageSelect::STOP:
-		if (InputController::getInstance().GetPush(KEY_INPUT_Z))
+		if (InputController::getInstance().GetPush(KEY_INPUT_SPACE))
 		{
+			PlaySoundMem(pushSeHandle, DX_PLAYTYPE_BACK);
 			rotatePhase = RoratePhase::DECISION;
 			time->Reset();
 		}
@@ -65,7 +83,7 @@ void StageSelect::Update()
 		}
 		break;
 	case StageSelect::DECISION:
-		if (time->GetTimeCount() > 3000)
+		if (time->GetTimeCount() > 1000)
 		{
 			GameData::getInstance().Stage = selectStage;
 			nextScene = std::make_shared<GameMain>();
@@ -97,7 +115,7 @@ void StageSelect::Update()
 void StageSelect::RotateUpdate()
 {
 	radian += time->GetDeltaTime() * 0.001 * 2.0 * PI / static_cast<double>(stageImageHandle.size());
-	if (time->GetTimeCount() > 1000)
+	if (time->GetTimeCount() > 700)
 	{
 		radian = 0.0;
 		rotatePhase = RoratePhase::STOP;
@@ -112,13 +130,32 @@ void StageSelect::Draw() const
 	int x, y, c;
 	GetScreenState(&x, &y, &c);
 
+	int i = backTime % 20480 / 16;
+	DrawExtendGraph(i, 0, x + i, 190, backGraph2Handle, TRUE);
+	DrawExtendGraph(i - x, 0, i, 190, backGraph2Handle, TRUE);
+
+	DrawExtendGraph(0, 0, x, y, backGraphHandle, TRUE);
+
+
 #define SIH(num) stageImageHandle.at((selectStage + stageImageHandle.size() + num) % stageImageHandle.size()).first
 
-	int a = static_cast<int>( 255.0 * time->GetTimeCount() / 1000.0);
+	int a = static_cast<int>( 255.0 * time->GetTimeCount() / 600.0);
 	switch (rotatePhase)
 	{
 	case StageSelect::START:
-		DrawString(250, 240 - 32, "ステージセレクト！！！な演出", GetColor(0,0,0));
+		DrawExtendGraph(Perf(x, 15.0 + 70.0 * cos(radian + 2.0 / size * PI + 0.5 * PI)), 50 + Perf(y, 10.0 - 15.0 * sin(radian + 2.0 / size * PI + 0.5 * PI)),
+			Perf(x, 85.0 + 70.0 * cos(radian + 2.0 / size * PI + 0.5 * PI)), 50 + Perf(y, 80.0 - 15.0 * sin(radian + 2.0 / size * PI + 0.5 * PI)), SIH(2), FALSE);
+		DrawExtendGraph(Perf(x, 15.0 + 70.0 * cos(radian - 2.0 / size * PI + 0.5 * PI)), 50 + Perf(y, 10.0 - 15.0 * sin(radian - 2.0 / size * PI + 0.5 * PI)),
+			Perf(x, 85.0 + 70.0 * cos(radian - 2.0 / size * PI + 0.5 * PI)), 50 + Perf(y, 80.0 - 15.0 * sin(radian - 2.0 / size * PI + 0.5 * PI)), SIH(1), FALSE);
+		DrawExtendGraph(Perf(x, 15.0 + 70.0 * cos(radian + 0.5 * PI)), 50 + Perf(y, 10.0 - 15.0 * sin(radian + 0.5 * PI)),
+			Perf(x, 85.0 + 70.0 * cos(radian + 0.5 * PI)), 50 + Perf(y, 80.0 - 15.0 * sin(radian + 0.5 * PI)), SIH(0), FALSE);
+
+		if (time->GetTimeCount() < 510)
+		{
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - time->GetTimeCount() / 2);
+			DrawBox(0, 0, x, y, GetColor(255, 255, 255), TRUE);
+			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+		}
 		break;
 	case StageSelect::ROTATE:
 		if (time->GetTimeCount() < 500)
@@ -151,28 +188,29 @@ void StageSelect::Draw() const
 		a = (time->GetTimeCount() * (4000 - time->GetTimeCount())) / 4000;
 		a = (a > 255) ? 255 : a;
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, a);
-		DrawExtendGraph(150, y - 450, x - 150, y - 50, stageImageHandle.at(selectStage).second, TRUE);
+		DrawExtendGraph(100, y - 450, x - 100, y - 50, stageImageHandle.at(selectStage).second, TRUE);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 		break;
 	case StageSelect::DECISION:
 		DrawExtendGraph(Perf(x, 15.0), 50 + Perf(y, 10.0 - 15.0),
 			Perf(x, 85.0), 50 + Perf(y, 80.0 - 15.0), stageImageHandle.at(selectStage).first, FALSE);
-		DrawExtendGraph(150, y - 450, x - 150, y - 50, stageImageHandle.at(selectStage).second, TRUE);
-		if (time->GetTimeCount() < 1000)
+		DrawExtendGraph(100, y - 450, x - 100, y - 50, stageImageHandle.at(selectStage).second, TRUE);
+		if (time->GetTimeCount() < 600)
 		{
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, a);
 			DrawExtendGraph(static_cast<int>(-a * 16 / 20.0) + Perf(x, 15.0), static_cast<int>(-a * 9 / 20.0) + 50 + Perf(y, 10.0 - 15.0),
 				static_cast<int>(a * 16 / 20.0) + Perf(x, 85.0), static_cast<int>(a * 9 / 20.0) + 50 + Perf(y, 80.0 - 15.0), stageImageHandle.at(selectStage).first, FALSE);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
-		else if (time->GetTimeCount() > 2490)
+		
+		if (time->GetTimeCount() > 190)
 		{
-			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - (3000 - time->GetTimeCount()) / 2);
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - (700 - time->GetTimeCount()) / 2);
 			DrawExtendGraph(0, 0, x, y, loadHandle, TRUE);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
-		else if (time->GetTimeCount() > 3000)
+		else if (time->GetTimeCount() > 700)
 		{
 			DrawExtendGraph(0, 0, x, y, loadHandle, TRUE);
 		}

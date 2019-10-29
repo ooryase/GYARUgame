@@ -12,6 +12,7 @@ public:
 		PERFECT,
 		GOOD,
 		BAD,
+		MISS,
 		DEFAULT
 	};
 
@@ -29,7 +30,7 @@ protected:
 public:
 	Notes(int _notesHandle,int _krkrHandle,int _x,int _y);
 
-	virtual void Update(int deltaTime);
+	virtual bool Update(int deltaTime, bool active);
 	virtual void Draw() const;
 
 	virtual void Push();

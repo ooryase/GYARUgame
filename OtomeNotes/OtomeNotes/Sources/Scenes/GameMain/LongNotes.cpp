@@ -8,26 +8,29 @@ longNotesHandle(_longNotesHandle)
 	releaseTime = _releaseTime;
 }
 
-void LongNotes::Update(int deltaTime)
+bool LongNotes::Update(int deltaTime,bool active)
 {
 	time += deltaTime;
 
-	if (!push && InputController::getInstance().GetPush(KEY_INPUT_Z))
+	if (!push && InputController::getInstance().GetPush(KEY_INPUT_SPACE) && active)
 	{
 		Evalution = NotesEvalution(time - popToJustTime);
+		return false;
 	}
-	else if (push && InputController::getInstance().GetRelease(KEY_INPUT_Z))
+	else if (push && InputController::getInstance().GetRelease(KEY_INPUT_SPACE) && active)
 	{
 		Evalution = NotesEvalution(time - (popToJustTime + releaseTime));
-		Evalution = (Evalution == EvalutionType::DEFAULT) ? EvalutionType::BAD : Evalution;
+		Evalution = (Evalution == EvalutionType::DEFAULT) ? EvalutionType::MISS : Evalution;
+		return false;
 	}
 
 	if ((!push && time > popToJustTime + 500) ||
 		(push && time > popToJustTime + 500 + releaseTime))
 	{
 		Dead = true;
-		Evalution = EvalutionType::BAD;
+		Evalution = EvalutionType::MISS;
 	}
+	return active;
 
 }
 
@@ -55,7 +58,7 @@ void LongNotes::Draw() const
 
 void LongNotes::Push()
 {
-	Dead = (Evalution == EvalutionType::BAD) || push;
+	Dead = (Evalution == EvalutionType::MISS) || push;
 	push = true;
 
 	Evalution = EvalutionType::DEFAULT;

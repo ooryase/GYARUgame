@@ -8,14 +8,27 @@ RepeatedNotes::RepeatedNotes(int _notesHandle,int _krkrHandle,int _x,int _y, int
 	releaseTime = _releaseTime;
 }
 
-void RepeatedNotes::Update(int deltaTime)
+bool RepeatedNotes::Update(int deltaTime,bool active)
 {
 	time += deltaTime;
 
-	if (popToJustTime < time && time < releaseTime + popToJustTime)
+	if (InputController::getInstance().GetPush(KEY_INPUT_SPACE) && active)
 	{
-		if (InputController::getInstance().GetPush(KEY_INPUT_Z))
+		if (popToJustTime - 75 < time && time < releaseTime + popToJustTime + 75)
+		{
 			Evalution = EvalutionType::PERFECT;
+			return false;
+		}
+		else if (popToJustTime - 175 < time && time < releaseTime + popToJustTime + 175)
+		{
+			Evalution = EvalutionType::GOOD;
+			return false;
+		}
+		else if (popToJustTime - 390 < time && time < releaseTime + popToJustTime + 390)
+		{
+			Evalution = EvalutionType::BAD;
+			return false;
+		}
 	}
 
 	if (releaseTime + popToJustTime < time)
@@ -23,6 +36,7 @@ void RepeatedNotes::Update(int deltaTime)
 		Dead = true;
 		//Evalution = EvalutionType::BAD;
 	}
+	return active;
 }
 
 void RepeatedNotes::Draw() const

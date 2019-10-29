@@ -2,15 +2,18 @@
 #include"DxLib.h"
 #include"Ending.h"
 #include"../MainController/InputController.h"
-#include"Title.h"
+#include"Attention.h"
+#include"../MainController/GameData.h"
 
 Ending::Ending() : VirtualScene(),
 backGraphHandle(LoadGraph("Assets/Textures/Title/Title_back.png")),
 textGraphHandle(LoadGraph("Assets/Textures/Title/Space.png")),
-endCallHandle(LoadSoundMem("Assets/Sounds/Voice/SystemVoice/titlecall3.mp3"))
+endCallHandle(LoadSoundMem("Assets/Sounds/Voice/SystemVoice/last.mp3"))
 {
 	phase = PhaseList::START;
 	time->Reset();
+
+	PlaySoundMem(endCallHandle, DX_PLAYTYPE_BACK);
 }
 
 Ending::~Ending()
@@ -18,6 +21,9 @@ Ending::~Ending()
 	DeleteGraph(backGraphHandle);
 	DeleteGraph(textGraphHandle);
 	DeleteSoundMem(endCallHandle);
+
+	StopSoundMem(GameData::getInstance().BgmHandle);
+	DeleteSoundMem(GameData::getInstance().BgmHandle);
 }
 
 void Ending::Update()
@@ -27,7 +33,7 @@ void Ending::Update()
 	switch (phase)
 	{
 	case PhaseList::START:
-		if ((time->GetTimeCount() > 2000 && InputController::getInstance().GetPush(KEY_INPUT_Z)) ||
+		if ((time->GetTimeCount() > 1000 && InputController::getInstance().GetPush(KEY_INPUT_SPACE)) ||
 			time->GetTimeCount() > 10000)
 		{
 			phase = PhaseList::NEXT;
@@ -37,13 +43,13 @@ void Ending::Update()
 		else if (InputController::getInstance().GetPush(KEY_INPUT_BACK))
 		{
 			phase = PhaseList::NEXT;
-			nextScene = std::make_shared<Title>();
+			nextScene = std::make_shared<Attention>();
 		}
 #endif
 		break;
 	case PhaseList::NEXT:
-		if(time->GetTimeCount() > 510)
-			nextScene = std::make_shared<Title>();
+		if (time->GetTimeCount() > 510)
+			nextScene = std::make_shared<Attention>();
 		break;
 	default:
 		break;

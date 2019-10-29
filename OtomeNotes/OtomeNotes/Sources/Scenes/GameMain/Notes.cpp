@@ -15,20 +15,22 @@ Notes::Notes(int _notesHandle,int _krkrHandle, int _x, int _y) :
 	push = false;
 }
 
-void Notes::Update(int deltaTime)
+bool Notes::Update(int deltaTime , bool active)
 {
 	time += deltaTime;
 
-	if (InputController::getInstance().GetPush(KEY_INPUT_Z))
+	if (InputController::getInstance().GetPush(KEY_INPUT_SPACE) && active)
 	{
 		Evalution = NotesEvalution(time - popToJustTime);
+		return false;
 	}
 	
 	if (time > popToJustTime + 300)
 	{
 		Dead = true;
-		Evalution = EvalutionType::BAD;
+		Evalution = EvalutionType::MISS;
 	}
+	return active;
 }
 
 void Notes::Draw() const
@@ -49,15 +51,15 @@ void Notes::Draw() const
 
 Notes::EvalutionType Notes::NotesEvalution(int justTime)
 {
-	if (abs(justTime) < 50)
+	if (abs(justTime) < 75)
 	{
 		return EvalutionType::PERFECT;
 	}
-	else if (abs(justTime) < 250)
+	else if (abs(justTime) < 175)
 	{
 		return EvalutionType::GOOD;
 	}
-	else if (abs(justTime) < 300)
+	else if (abs(justTime) < 390)
 	{
 		return EvalutionType::BAD;
 	}

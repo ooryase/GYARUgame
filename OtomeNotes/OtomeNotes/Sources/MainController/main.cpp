@@ -22,7 +22,11 @@ int WINAPI WinMain(
 #pragma region 初期処理
 
 	//ウィンドウモードに設定
+#if _DEBUG
 	ChangeWindowMode(TRUE);
+#else
+	ChangeWindowMode(FALSE);
+#endif
 
 	//ウィンドウサイズを手動では変更できず、
 	//かつウィンドウサイズに合わせて拡大できないようにする
@@ -37,7 +41,7 @@ int WINAPI WinMain(
 	SetWindowSizeExtendRate(1, 0);
 
 	//画面の背景色を設定する
-	SetBackgroundColor(0xEF, 0xFF, 0xEF);
+	SetBackgroundColor(0xFF, 0xFF, 0xFF);
 
 #pragma endregion 
 

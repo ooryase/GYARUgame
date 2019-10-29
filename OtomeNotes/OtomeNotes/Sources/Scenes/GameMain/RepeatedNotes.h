@@ -8,7 +8,7 @@ class RepeatedNotes : public Notes
 public:
 	RepeatedNotes(int _notesHandle,int _krkrHandle, int _x, int _y, int _releaseTime,int _longNotesHandle);
 
-	void Update(int deltaTime);
+	bool Update(int deltaTime,bool active);
 	void Draw() const;
 
 	void Push();

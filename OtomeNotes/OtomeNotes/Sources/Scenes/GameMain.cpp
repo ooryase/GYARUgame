@@ -11,11 +11,13 @@
 GameMain::GameMain() : VirtualScene(),
 	fileHandle(FileRead_open("Assets/CSV/Notes.csv")),
 	fontHandle(LoadFontDataToHandle("Assets/Fonts/Senobi_m.dft",1)),
-	largeFontHandle(LoadFontDataToHandle("Assets/Fonts/Senobi_m128.dft", 1)),
+	mFontHandle(LoadFontDataToHandle("Assets/Fonts/Senobi_m64.dft", 1)),
+	largeFontHandle(LoadFontDataToHandle("Assets/Fonts/Senobi_m96.dft", 1)),
 	longNotesHandle(LoadGraph("Assets/Textures/GameMain/LongNotes.png")),
 	textFrameHandle(LoadGraph("Assets/Textures/GameMain/TextFrame.png")),
 	frameHandle(LoadGraph("Assets/Textures/GameMain/Frame.png")),
 	SE_notesHandle(LoadSoundMem("Assets/Sounds/SE/note_normal.mp3")),
+	bgmResultHandle(LoadSoundMem("Assets/Sounds/BGM/Result.mp3")),
 	gaugeHandle(LoadGraph("Assets/Textures/GameMain/Gauge.png")),
 	gaugeHandle2(LoadGraph("Assets/Textures/GameMain/Gauge2.png"))
 {
@@ -25,7 +27,6 @@ GameMain::GameMain() : VirtualScene(),
 	notesHandle[2] = MakeScreen(100, 100, TRUE);
 	int i = GraphFilterBlt(notesHandle[0],notesHandle[1], DX_GRAPH_FILTER_HSB,0,-120,0,0);
 	int j = GraphFilterBlt(notesHandle[0],notesHandle[2], DX_GRAPH_FILTER_HSB,0,60,0,0);
-	bgmHandle = LoadSoundMem("Assets/Sounds/BGM/Himeka.wav");
 	LoadDivGraph("Assets/Textures/GameMain/FullTexture.png", 3, 1, 3, 640, 360, fullTextHandle);
 	LoadDivGraph("Assets/Textures/GameMain/Fever2.png",2 , 1, 2, 640, 360, feverBackHandle);
 	//feverBackHandle[1] = LoadGraph("Assets/Textures/GameMain/Fever2.png");
@@ -35,6 +36,7 @@ GameMain::GameMain() : VirtualScene(),
 	SE_resultHandle[0] = LoadSoundMem("Assets/Sounds/Voice/SystemVoice/excellent.mp3");
 	SE_resultHandle[1] = LoadSoundMem("Assets/Sounds/Voice/SystemVoice/good.mp3");
 	SE_resultHandle[2] = LoadSoundMem("Assets/Sounds/Voice/SystemVoice/failling.mp3");
+
 
 	LoadSelectChara();
 
@@ -54,8 +56,8 @@ GameMain::GameMain() : VirtualScene(),
 	
 	score = 0;
 	scoreCount[0] = scoreCount[1] = scoreCount[2] = scoreCount[3] = 0;
-	scoreColor[0] = GetColor(255, 205, 100);
-	scoreColor[1] = GetColor(255, 255, 155);
+	scoreColor[0] = GetColor(255, 255, 155);
+	scoreColor[1] = GetColor(255, 205, 100);
 	scoreColor[2] = GetColor(205, 185, 235);
 	scoreColor[3] = GetColor(185, 185, 185);
 	scoreName[0] = "PARFECT";
@@ -142,58 +144,33 @@ void GameMain::MainUpdate()
 	backGroundTime += time->GetDeltaTime();
 
 
-	if (FileRead_eof(fileHandle) || InputController::getInstance().GetPush(KEY_INPUT_BACK))
+	if (FileRead_eof(fileHandle))
 	{
 		time->Reset();
 		phase = PhaseType::RESULT;
 		StopSoundMem(bgmHandle);
+		particles.clear();
 	}
+#if _DEBUG
+	if (InputController::getInstance().GetPush(KEY_INPUT_BACK))
+	{
+		time->Reset();
+		phase = PhaseType::RESULT;
+		StopSoundMem(bgmHandle);
+		particles.clear();
+	}
+#endif
+
 
 	for (auto&& var : popText)
 		var->Update(time->GetDeltaTime());
 
+	bool active = true;
 	for (auto&& var : notes)
-		var->Update(time->GetDeltaTime());
+		active = var->Update(time->GetDeltaTime(),active);
 
-	for (auto&& var : notes)
-	{
-		if (var->Evalution != Notes::EvalutionType::DEFAULT)
-		{
-			scoreCount[var->Evalution]++;
-			PlaySoundMem(SE_notesHandle, DX_PLAYTYPE_BACK);
+	NotesCheck();
 
-			auto i = buttons.at(0)->GetTime() / 5 - 40;
-			switch (var->Evalution)
-			{
-			case Notes::EvalutionType::GOOD:
-				score += 100;
-				AddFeel(15);
-				particles.push_back(std::make_shared<EvalutionText>(i, 600, fontHandle, "GOOD", GetColor(255, 205, 100)));
-				particles.push_back(std::make_shared<NotesButton>(i, notesY, buttonHandle[0]));
-				particles.push_back(std::make_shared<Krkr>(i, notesY, krkrHandle, 0, 2.0));
-				backParticles.push_back(std::make_shared<Hwhw>(640, 150, hwhwHandle[1], 0, 3.0));
-				Live2D_Model_StartMotion(modelHandle, "Good", 0);
-				break;
-			case Notes::EvalutionType::PERFECT:
-				score += 200;
-				AddFeel(10);
-				particles.push_back(std::make_shared<EvalutionText>(i, 600, fontHandle, "PERFECT", GetColor(255, 255, 155)));
-				particles.push_back(std::make_shared<NotesButton>(i, notesY, buttonHandle[0]));
-				particles.push_back(std::make_shared<Krkr>(i, notesY, krkrHandle, 0, 2.0));
-				backParticles.push_back(std::make_shared<Hwhw>(640, 150, hwhwHandle[0], 0, 3.0));
-				Live2D_Model_StartMotion(modelHandle, "Parfect", 0);
-				break;
-			case Notes::EvalutionType::BAD:
-				AddFeel(-8);
-				particles.push_back(std::make_shared<EvalutionText>(i, 600, fontHandle, "BAD", GetColor(205, 185, 235)));
-				particles.push_back(std::make_shared<NotesButton>(i, notesY, buttonHandle[0]));
-				backParticles.push_back(std::make_shared<Hwhw>(640, 150, hwhwHandle[2], 0, 3.0));
-				Live2D_Model_StartMotion(modelHandle, "Bad", 0);
-				break;
-			}
-			var->Push();
-		}
-	}
 
 	auto it =
 		std::remove_if(notes.begin(), notes.end(), [](
@@ -234,12 +211,17 @@ void GameMain::MainUpdate()
 	// ÉÇÉfÉãÇÃèÛë‘Ç60ï™ÇÃ1ïbï™êiÇﬂÇÈ
 	Live2D_Model_Update(modelHandle, time->GetDeltaTime() / 1000.0f);
 
+	if (InputController::getInstance().GetPush(KEY_INPUT_SPACE))
+	{
+		PlaySoundMem(SE_notesHandle, DX_PLAYTYPE_BACK);
+	}
 }
 
 void GameMain::ResultUpdate()
 {
 	if (time->GetTimeCount() > 3000 && scorePopCount == 0)
 	{
+		PlaySoundMem(bgmResultHandle, DX_PLAYTYPE_LOOP);
 		scorePopCount++;
 		if (fever == 1)
 		{
@@ -255,12 +237,18 @@ void GameMain::ResultUpdate()
 		}
 		else if (fever == -1)
 		{
-			backParticles.push_back(std::make_shared<Hwhw>(640, 150, hwhwHandle[1], 0, 3.0));
+			backParticles.push_back(std::make_shared<Doyon>(540, 100, hwhwHandle[2], 130));
+			backParticles.push_back(std::make_shared<Doyon>(760, 150, hwhwHandle[3], 100));
 			Live2D_Model_StartMotion(modelHandle, "Bad", 0);
 			PlaySoundMem(resultVoiceHandle[2], DX_PLAYTYPE_BACK);
 		}
 	}
-	else if ((time->GetTimeCount() > 10000 && InputController::getInstance().GetPush(KEY_INPUT_Z)) ||
+	/*else if (time->GetTimeCount() > 6000 && scorePopCount == 1)
+	{
+		scorePopCount++;
+		particles.push_back(std::make_shared<Krkr>(890, 480, krkrHandle, 0,4.0));
+	}*/
+	else if ((time->GetTimeCount() > 10000 && InputController::getInstance().GetPush(KEY_INPUT_SPACE)) ||
 		time->GetTimeCount() > 20000)
 	{
 		phase = PhaseType::NEXT;
@@ -284,21 +272,6 @@ void GameMain::ResultUpdate()
 			std::shared_ptr<VirtualParticle>am) {return  am->Dead; });
 	backParticles.erase(itrp, backParticles.end());
 
-
-	/*if (time->GetTimeCount() > 1000 + scorePopCount * 500 && scorePopCount < 3)
-	{
-		particles.push_back(std::make_shared<Krkr>(200, 270 - scorePopCount * 60, krkrHandle, 120, 5.0));
-		scorePopCount++;
-	}
-
-	for (auto&& var : particles)
-		var->Update(time->GetDeltaTime());
-
-	auto itr =
-		std::remove_if(particles.begin(), particles.end(), [](
-			std::shared_ptr<VirtualParticle>am) {return  am->Dead; });
-	particles.erase(itr, particles.end());*/
-
 	// ÉÇÅ[ÉVÉáÉìçƒê∂Ç™èIóπÇµÇƒÇ¢ÇΩÇÁÉAÉCÉhÉäÉìÉOÉÇÅ[ÉVÉáÉìÇÉâÉìÉ_ÉÄÇ≈çƒê∂
 	if (Live2D_Model_IsMotionFinished(modelHandle) == TRUE)
 	{
@@ -314,6 +287,7 @@ void GameMain::NextUpdate()
 {
 	if (time->GetTimeCount() > 510)
 	{
+		GameData::getInstance().BgmHandle = bgmResultHandle;
 		nextScene = std::make_shared<Ending>();
 	}
 }
@@ -437,65 +411,17 @@ void GameMain::ResultDraw() const
 	// Live2Dï`âÊÇÃèIóπ
 	Live2D_RenderEnd();
 
+	GaugeDraw(x, y);
+
+
 	if (time->GetTimeCount() < 1000)
 	{
 		DrawExtendGraph(50, y - 300 + time->GetTimeCount() / 2, x - 50, y + time->GetTimeCount() / 2, textFrameHandle, TRUE);
 	}
 
 
-	if (time->GetTimeCount() > 6000)
-	{
-		if(fever == 1)
-			DrawStringToHandle(740, 300, "EXCELLENT", scoreColor[0], largeFontHandle);
-		else if (fever == 0)
-			DrawStringToHandle(740, 300, "GOOD", scoreColor[1], largeFontHandle);
-		else if (fever == -1)
-			DrawStringToHandle(740, 300, "FAILLING", scoreColor[2], largeFontHandle);
-	}
+
 	ScoreDraw(x,y);
-
-
-	/*
-
-	//PARFECT,GOOD,BAD ÇÃï\é¶
-	if (time->GetTimeCount() > 2200)
-		DrawStringToHandle(150, 150, "PERFECT", scoreColor[0], fontHandle);
-	if (time->GetTimeCount() > 1700)
-		DrawStringToHandle(150, 210, "GOOD", scoreColor[1], fontHandle);
-	if (time->GetTimeCount() > 1200)
-		DrawStringToHandle(150, 270, "BAD", scoreColor[2], fontHandle);
-
-	for (int i = 0; i < 3; i++)
-	{
-		if (time->GetTimeCount() <= 1200 + i * 500)
-			break;
-
-		if (time->GetTimeCount() < 2700 + i * 1000)
-			DrawStringToHandle(350, 270 - i * 60, "0000", scoreColor[2 - i], fontHandle);
-		else if (time->GetTimeCount() < 3200 + i * 1000)
-			DrawStringToHandle(350, 270 - i * 60, 
-				ScoreCountTostring(2 - i, time->GetTimeCount() - 2700 - i * 1000, 500).c_str(), scoreColor[2 - i], fontHandle);
-		else
-			DrawStringToHandle(350, 270 - i * 60, ScoreCountTostring(2 - i, 1, 1).c_str(), scoreColor[2 - i], fontHandle);
-	}
-
-	*/
-
-	//ÉXÉRÉAÇÃï\é¶
-	//if(time->GetTimeCount() < x / 2)
-
-	/*if (time->GetTimeCount() < x / 2)
-	{
-		DrawExtendGraph(50 + time->GetTimeCount() / 2, 50, 100 + time->GetTimeCount() / 2, y - 350, gaugeHandle, TRUE);
-		DrawExtendGraph(35 + time->GetTimeCount() / 2, (y - 400) * (100 - feel) / 100 + 10,
-			115 + time->GetTimeCount() / 2, (y - 400) * (100 - feel) / 100 + 90, gaugeHandle2, TRUE);
-	}
-	else
-	{
-		DrawExtendGraph(50 + x / 4, 50, 100 + x / 4, y - 350, gaugeHandle, TRUE);
-		DrawExtendGraph(35 + x / 4, (y - 400) * (100 - feel) / 100 + 10,
-			115 + x / 4, (y - 400) * (100 - feel) / 100 + 90, gaugeHandle2, TRUE);
-	}*/
 
 	for (auto&& var : particles)
 		var->Draw();
@@ -520,14 +446,6 @@ void GameMain::NextDraw() const
 	// Live2Dï`âÊÇÃèIóπ
 	Live2D_RenderEnd();
 
-
-
-	if (fever == 1)
-		DrawStringToHandle(740, 300, "EXCELLENT", scoreColor[0], largeFontHandle);
-	else if (fever == 0)
-		DrawStringToHandle(740, 300, "GOOD", scoreColor[1], largeFontHandle);
-	else if (fever == -1)
-		DrawStringToHandle(740, 300, "FAILLING", scoreColor[2], largeFontHandle);
 	
 	for (int i = 0; i < 4; i++)
 	{
@@ -549,6 +467,15 @@ void GameMain::NextDraw() const
 	}
 	else
 		DrawBox(0, 0, x, y, GetColor(255, 255, 255), TRUE);
+
+	//ï]âø
+	DrawExtendGraph(720, 440, 1170, 540, frameHandle, TRUE);
+	if (fever == 1)
+		DrawStringToHandle(740, 460, "EXCELLENT", scoreColor[0], mFontHandle);
+	else if (fever == 0)
+		DrawStringToHandle(740, 460, "  GOOD", scoreColor[1], mFontHandle);
+	else if (fever == -1)
+		DrawStringToHandle(740, 460, " FAILED", scoreColor[2], mFontHandle);
 
 }
 
@@ -579,7 +506,7 @@ void GameMain::FeverDraw(int x, int y) const
 	if (fever == 0)
 		return;
 
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 125 + static_cast<int>(cos(feverTime / 370.0) * 120));
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 165 + static_cast<int>(cos(feverTime / 370.0) * 80));
 	int yy = static_cast<int>( sin(feverTime / 500.0) * 10.0);
 	DrawExtendGraph(0, -10 + yy, x, y + 10 + yy, feverBackHandle[1 - (fever == -1)], TRUE);
 	
@@ -610,6 +537,15 @@ void GameMain::ScoreDraw(int x, int y) const
 		DrawStringToHandle(240, y - 400 + temp,
 			ScoreCountTostring(5, 0, 1).c_str(), GetColor(255, 255, 255), fontHandle);
 
+		//ï]âø
+		DrawExtendGraph(720, 440 + temp, 1170, 540 + temp, frameHandle, TRUE);
+		if (fever == 1)
+			DrawStringToHandle(740, 460 + temp, "EXCELLENT", scoreColor[0], mFontHandle);
+		else if (fever == 0)
+			DrawStringToHandle(740, 460 + temp, "  GOOD", scoreColor[1], mFontHandle);
+		else if (fever == -1)
+			DrawStringToHandle(740, 460 + temp, " FAILED", scoreColor[2], mFontHandle);
+
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 	}
@@ -626,6 +562,16 @@ void GameMain::ScoreDraw(int x, int y) const
 		DrawStringToHandle(60, y - 400, "SCORE", GetColor(255, 255, 255), fontHandle);
 		DrawStringToHandle(240, y - 400,
 			ScoreCountTostring(5, time->GetTimeCount() - 6510,500).c_str(), GetColor(255, 255, 255), fontHandle);
+
+		//ï]âø
+		DrawExtendGraph(720, 440, 1170, 540, frameHandle, TRUE);
+		if (fever == 1)
+			DrawStringToHandle(740, 460, "EXCELLENT", scoreColor[0], mFontHandle);
+		else if (fever == 0)
+			DrawStringToHandle(740, 460, "  GOOD", scoreColor[1], mFontHandle);
+		else if (fever == -1)
+			DrawStringToHandle(740, 460, " FAILED", scoreColor[2], mFontHandle);
+
 	}
 	else
 	{
@@ -640,6 +586,16 @@ void GameMain::ScoreDraw(int x, int y) const
 		DrawStringToHandle(60, y - 400, "SCORE", GetColor(255, 255, 255), fontHandle);
 		DrawStringToHandle(240, y - 400,
 			ScoreCountTostring(5, 1, 1).c_str(), GetColor(255, 255, 255), fontHandle);
+
+		//ï]âø
+		DrawExtendGraph(720, 440, 1170, 540, frameHandle, TRUE);
+		if (fever == 1)
+			DrawStringToHandle(740, 460, "EXCELLENT", scoreColor[0], mFontHandle);
+		else if (fever == 0)
+			DrawStringToHandle(740, 460, "  GOOD", scoreColor[1], mFontHandle);
+		else if (fever == -1)
+			DrawStringToHandle(740, 460, " FAILED", scoreColor[2], mFontHandle);
+
 	}
 
 }
@@ -655,11 +611,13 @@ void GameMain::LoadSelectChara()
 		Live2D_Model_SetExtendRate(modelHandle, 1.5f,1.5f);
 		Live2D_Model_SetTranslate(modelHandle, 0.0f, -110.0f);
 
+		bgmHandle = LoadSoundMem("Assets/Sounds/BGM/Himeka.mp3");
+
 		resultVoiceHandle[0] = LoadSoundMem("Assets/Sounds/Voice/Himeka/r1_01.wav");
 		resultVoiceHandle[1] = LoadSoundMem("Assets/Sounds/Voice/Himeka/r2_01.wav");
 		resultVoiceHandle[2] = LoadSoundMem("Assets/Sounds/Voice/Himeka/r3_01.wav");
 
-		charaName = "åYïîÇøÇ·ÇÒ";
+		charaName = "åYïî ïPâ‘";
 	}
 	//Himari
 	else if (GameData::getInstance().Stage == 1)
@@ -670,13 +628,15 @@ void GameMain::LoadSelectChara()
 		Live2D_Model_SetExtendRate(modelHandle, 1.5f, 1.5f);
 		Live2D_Model_SetTranslate(modelHandle, 0.0f, -110.0f);
 
-		resultVoiceHandle[0] = LoadSoundMem("Assets/Sounds/Voice/Himeka/r1_01.wav");
-		resultVoiceHandle[1] = LoadSoundMem("Assets/Sounds/Voice/Himeka/r2_01.wav");
-		resultVoiceHandle[2] = LoadSoundMem("Assets/Sounds/Voice/Himeka/r3_01.wav");
+		bgmHandle = LoadSoundMem("Assets/Sounds/BGM/Himeka.mp3");
 
-		charaName = "àœàıí∑";
+		resultVoiceHandle[0] = LoadSoundMem("Assets/Sounds/Voice/Mahiru/r1.mp3");
+		resultVoiceHandle[1] = LoadSoundMem("Assets/Sounds/Voice/Mahiru/r2.mp3");
+		resultVoiceHandle[2] = LoadSoundMem("Assets/Sounds/Voice/Mahiru/r3.mp3");
+
+		charaName = "Ç‹Ç–ÇÈ";
 	}
-	//Manamii
+	//Manami
 	else if(GameData::getInstance().Stage == 2)
 	{
 		modelHandle = Live2D_LoadModel("Assets/Live2d/Manami/manami.model3.json");
@@ -685,9 +645,11 @@ void GameMain::LoadSelectChara()
 		Live2D_Model_SetExtendRate(modelHandle, 1.5f, 1.5f);
 		Live2D_Model_SetTranslate(modelHandle, 0.0f, -90.0f);
 
-		resultVoiceHandle[0] = LoadSoundMem("Assets/Sounds/Voice/Himeka/r1_01.wav");
-		resultVoiceHandle[1] = LoadSoundMem("Assets/Sounds/Voice/Himeka/r2_01.wav");
-		resultVoiceHandle[2] = LoadSoundMem("Assets/Sounds/Voice/Himeka/r3_01.wav");
+		bgmHandle = LoadSoundMem("Assets/Sounds/BGM/Satsuki.mp3");
+
+		resultVoiceHandle[0] = LoadSoundMem("Assets/Sounds/Voice/Manami/r1.mp3");
+		resultVoiceHandle[1] = LoadSoundMem("Assets/Sounds/Voice/Manami/r2.mp3");
+		resultVoiceHandle[2] = LoadSoundMem("Assets/Sounds/Voice/Manami/r3.mp3");
 
 		charaName = "ÉGÉçétè†";
 	}
@@ -744,6 +706,57 @@ void GameMain::NotesPush(char _notesType)
 		notes.push_back(std::make_shared<RepeatedNotes>(notesHandle[2], buttonHandle[1], notesX, notesY,
 		(readText[10] - '0') * 1000 + (readText[11] - '0') * 100 + (readText[12] - '0') * 10 + (readText[13] - '0'),
 			longNotesHandle));
+}
+
+void GameMain::NotesCheck()
+{
+	for (auto&& var : notes)
+	{
+		int eva = var->Evalution;
+
+		if (eva == Notes::EvalutionType::DEFAULT)
+			return;
+
+		scoreCount[eva]++;
+		PlaySoundMem(SE_notesHandle, DX_PLAYTYPE_BACK);
+
+		auto i = buttons.at(0)->GetTime() / 5 - 40;
+		switch (eva)
+		{
+		case Notes::EvalutionType::PERFECT:
+			score += 20;
+			AddFeel(5);
+			particles.push_back(std::make_shared<Krkr>(i, notesY, krkrHandle, 0, 2.0));
+			backParticles.push_back(std::make_shared<Hwhw>(640, 150, hwhwHandle[0], 0, 3.0));
+			Live2D_Model_StartMotion(modelHandle, "Parfect", 0);
+			break;
+		case Notes::EvalutionType::GOOD:
+			score += 15;
+			AddFeel(2);
+			particles.push_back(std::make_shared<Krkr>(i, notesY, krkrHandle, 0, 2.0));
+			backParticles.push_back(std::make_shared<Hwhw>(640, 150, hwhwHandle[1], 0, 3.0));
+			Live2D_Model_StartMotion(modelHandle, "Good", 0);
+			break;
+		case Notes::EvalutionType::BAD:
+			score += 5;
+			AddFeel(-6);
+			backParticles.push_back(std::make_shared<Doyon>(540, 100, hwhwHandle[2], 130));
+			backParticles.push_back(std::make_shared<Doyon>(760, 150, hwhwHandle[3], 100));
+			Live2D_Model_StartMotion(modelHandle, "Bad", 0);
+			break;
+		case Notes::EvalutionType::MISS:
+			AddFeel(-10);
+			backParticles.push_back(std::make_shared<Doyon>(540, 100, hwhwHandle[2], 130));
+			backParticles.push_back(std::make_shared<Doyon>(760, 150, hwhwHandle[3], 100));
+			Live2D_Model_StartMotion(modelHandle, "Bad", 0);
+			break;
+		}
+
+		particles.push_back(std::make_shared<EvalutionText>(i, 600, fontHandle, scoreName[eva].c_str(), scoreColor[eva]));
+		particles.push_back(std::make_shared<NotesButton>(i, notesY, buttonHandle[0]));
+
+		var->Push();		
+	}
 }
 
 void GameMain::QueueRead()

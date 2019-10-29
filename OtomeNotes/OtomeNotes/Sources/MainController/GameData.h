@@ -11,6 +11,7 @@ private:
 public:
 	int Score;
 	int Stage;
+	int BgmHandle;//ƒV[ƒ“‚ğ‚Ü‚½‚¢‚ÅÄ¶‚µ‘±‚¯‚é—p
 
 	static GameData& getInstance();
 

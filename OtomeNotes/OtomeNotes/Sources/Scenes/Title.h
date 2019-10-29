@@ -6,9 +6,12 @@ class Title : public VirtualScene
 private:
 	const int titleGraphHandle;
 	const int backGraphHandle;
+	const int backGraph2Handle;
 	const int textGraphHandle;
 	const int movieHandle;
+	const int bgmHandle;
 	const int titleCallHandle;
+	const int pushSeHandle;
 
 	enum TitlePhaseList
 	{
@@ -21,6 +24,8 @@ private:
 	TitlePhaseList phase;
 	bool movieSkip;
 
+	int time2;
+
 public:
 	Title();
 	~Title();
@@ -31,4 +36,5 @@ public:
 private:
 	void DrawTitle() const;
 	void DrawMovie() const;
+	void DrawDecision() const;
 };

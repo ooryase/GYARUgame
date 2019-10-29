@@ -99,6 +99,12 @@
     <ClCompile Include="Sources\Scenes\Ending.cpp">
       <Filter>ソース ファイル\Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="Sources\Particles\Doyon.cpp">
+      <Filter>ソース ファイル\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Scenes\Attention.cpp">
+      <Filter>ソース ファイル\Scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sources\MainController\GameData.h">
@@ -156,6 +162,12 @@
       <Filter>ヘッダー ファイル\Particles</Filter>
     </ClInclude>
     <ClInclude Include="Sources\Scenes\Ending.h">
+      <Filter>ヘッダー ファイル\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Particles\Doyon.h">
+      <Filter>ヘッダー ファイル\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Scenes\Attention.h">
       <Filter>ヘッダー ファイル\Scenes</Filter>
     </ClInclude>
   </ItemGroup>

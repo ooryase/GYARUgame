@@ -10,7 +10,7 @@ InputController& InputController::getInstance()
 
 void InputController::Init()
 {
-	keys[KEY_INPUT_Z] = KeyState();
+	keys[KEY_INPUT_SPACE] = KeyState();
 	keys[KEY_INPUT_BACK] = KeyState();
 	keys[KEY_INPUT_1] = KeyState();
 	keys[KEY_INPUT_2] = KeyState();
