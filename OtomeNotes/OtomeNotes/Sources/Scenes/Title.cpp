@@ -114,8 +114,8 @@ void Title::DrawTitle() const
 
 
 	int i = time->GetTimeCount() % 20480 / 16;
-	DrawExtendGraph(i, 0, x + i, 190, backGraph2Handle, TRUE);
-	DrawExtendGraph(i - x, 0, i, 190, backGraph2Handle, TRUE);
+	DrawExtendGraph(i, 0, x + i, 290, backGraph2Handle, TRUE);
+	DrawExtendGraph(i - x, 0, i, 290, backGraph2Handle, TRUE);
 
 	DrawExtendGraph(0, 0, x, y, backGraphHandle, TRUE);
 	DrawExtendGraph(0, 0, x, y, titleGraphHandle, TRUE);
@@ -160,8 +160,8 @@ void Title::DrawDecision() const
 
 
 	int i = time2 % 20480 / 16;
-	DrawExtendGraph(i, 0, x + i, 190, backGraph2Handle, TRUE);
-	DrawExtendGraph(i - x, 0, i, 190, backGraph2Handle, TRUE);
+	DrawExtendGraph(i, 0, x + i, 290, backGraph2Handle, TRUE);
+	DrawExtendGraph(i - x, 0, i, 290, backGraph2Handle, TRUE);
 
 	DrawExtendGraph(0, 0, x, y, backGraphHandle, TRUE);
 	DrawExtendGraph(0, 0, x, y, titleGraphHandle, TRUE);

@@ -43,13 +43,14 @@ private:
 	int hwhwHandle[4];
 	const int gaugeHandle;
 	const int gaugeHandle2;
+	const int heartHandle;
 
 	//サウンド
 	const int SE_notesHandle;
-	int SE_resultHandle[3];
 	int resultVoiceHandle[3];
 	int bgmHandle;
 	const int bgmResultHandle;
+	const int reStartHandle;
 
 	////CSVロード管理
 	int waitTime;
@@ -78,13 +79,16 @@ private:
 	int score;
 	int scoreCount[4];
 	int scoreColor[4];
+	int lastFeel;
 	int feel;
 	int fever;
 	int feverTime;
+	int pushTime;
 	std::string scoreName[4];
 
 	////リザルト用変数
 	int scorePopCount;
+	int pressTime;
 
 	////フェーズ管理
 	enum class PhaseType

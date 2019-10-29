@@ -25,7 +25,7 @@ bool Notes::Update(int deltaTime , bool active)
 		return false;
 	}
 	
-	if (time > popToJustTime + 300)
+	if (time > popToJustTime + 390)
 	{
 		Dead = true;
 		Evalution = EvalutionType::MISS;
@@ -51,13 +51,13 @@ void Notes::Draw() const
 
 Notes::EvalutionType Notes::NotesEvalution(int justTime)
 {
-	if (abs(justTime) < 75)
+ 	if (abs(justTime) < 75)
 	{
 		return EvalutionType::PERFECT;
 	}
 	else if (abs(justTime) < 175)
 	{
-		return EvalutionType::GOOD;
+ 		return EvalutionType::GOOD;
 	}
 	else if (abs(justTime) < 390)
 	{

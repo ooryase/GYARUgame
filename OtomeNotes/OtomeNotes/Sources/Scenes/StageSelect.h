@@ -11,13 +11,13 @@ private:
 	const int bgmHandle;
 	const int pushSeHandle;
 	const int backGraphHandle;
-	const int backGraph2Handle;
+	const int fontHandle;
 
 	double radian;
 	const double PI;
 	int selectStage;
 
-	int backTime;
+	int pressTime;
 
 	enum RoratePhase
 	{

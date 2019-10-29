@@ -14,7 +14,7 @@ bool LongNotes::Update(int deltaTime,bool active)
 
 	if (!push && InputController::getInstance().GetPush(KEY_INPUT_SPACE) && active)
 	{
-		Evalution = NotesEvalution(time - popToJustTime);
+ 		Evalution = NotesEvalution(time - popToJustTime);
 		return false;
 	}
 	else if (push && InputController::getInstance().GetRelease(KEY_INPUT_SPACE) && active)
@@ -39,20 +39,20 @@ void LongNotes::Draw() const
 	if (time < 510)
 	{
 		SetDrawBlendMode(DX_BLENDMODE_ADD, time / 2);
-		DrawExtendGraph(x, y - 50, x + releaseTime / 10, y + 50, longNotesHandle, TRUE);
+		DrawExtendGraph(x, y - 50, x + releaseTime / 5, y + 50, longNotesHandle, TRUE);
 		DrawGraph(x - 50, y - 50, notesHandle, TRUE);
-		DrawGraph(x - 50 + releaseTime / 10, y - 50, notesHandle, TRUE);
+		DrawGraph(x - 50 + releaseTime / 5, y - 50, notesHandle, TRUE);
 
 		SetDrawBlendMode(DX_BLENDMODE_ADD, 255 - abs(255 - time));
 		DrawExtendGraph(x - 60, y - 60, x + 60, y + 60, krkrHandle, TRUE);
-		DrawExtendGraph(x - 60 + releaseTime / 10, y - 60, x + 60 + releaseTime / 10, y + 60, krkrHandle, TRUE);
+		DrawExtendGraph(x - 60 + releaseTime / 5, y - 60, x + 60 + releaseTime / 5, y + 60, krkrHandle, TRUE);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
 	else
 	{
-		DrawExtendGraph(x, y - 50, x + releaseTime / 10, y + 50, longNotesHandle, TRUE);
+		DrawExtendGraph(x, y - 50, x + releaseTime / 5, y + 50, longNotesHandle, TRUE);
 		DrawGraph(x - 50, y - 50, notesHandle, TRUE);
-		DrawGraph(x - 50 + releaseTime / 10, y - 50, notesHandle, TRUE);
+		DrawGraph(x - 50 + releaseTime / 5, y - 50, notesHandle, TRUE);
 	}
 }
 

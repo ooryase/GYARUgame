@@ -6,7 +6,7 @@
 #include"../MainController/GameData.h"
 
 Ending::Ending() : VirtualScene(),
-backGraphHandle(LoadGraph("Assets/Textures/Title/Title_back.png")),
+backGraphHandle(LoadGraph("Assets/Textures/Ending/endcard.png")),
 textGraphHandle(LoadGraph("Assets/Textures/Title/Space.png")),
 endCallHandle(LoadSoundMem("Assets/Sounds/Voice/SystemVoice/last.mp3"))
 {

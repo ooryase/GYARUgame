@@ -8,11 +8,11 @@
 
 StageSelect::StageSelect() : VirtualScene(),
 	PI(3.14159265358979323846),
-	backGraphHandle(LoadGraph("Assets/Textures/Title/Title.png")),
-	backGraph2Handle(LoadGraph("Assets/Textures/Title/Title_back.png")),
+	backGraphHandle(LoadGraph("Assets/Textures/StageSelect/Back.png")),
 	infoVoiceHandle(LoadSoundMem("Assets/Sounds/Voice/SystemVoice/situation1.mp3")),
 	bgmHandle(LoadSoundMem("Assets/Sounds/BGM/StageSelect.mp3")),
-	pushSeHandle(LoadSoundMem("Assets/Sounds/SE/start3.mp3"))
+	pushSeHandle(LoadSoundMem("Assets/Sounds/SE/start3.mp3")),
+	fontHandle(LoadFontDataToHandle("Assets/Fonts/Senobi_m.dft", 1))
 {
 	stageImageHandle.push_back(std::make_pair(LoadGraph("Assets/Textures/StageSelect/Stage1.jpg"),
 		LoadGraph("Assets/Textures/StageSelect/font1.png")));
@@ -26,7 +26,7 @@ StageSelect::StageSelect() : VirtualScene(),
 	selectStage = 0;
 	rotatePhase = RoratePhase::START;
 
-	backTime = 0;
+	pressTime = 0;
 	PlaySoundMem(bgmHandle, DX_PLAYTYPE_LOOP);
 
 }
@@ -40,18 +40,17 @@ StageSelect::~StageSelect()
 	}
 
 	DeleteGraph(backGraphHandle);
-	DeleteGraph(backGraph2Handle);
 
 	StopSoundMem(bgmHandle);
 	DeleteSoundMem(bgmHandle);
 	DeleteSoundMem(infoVoiceHandle);
 	DeleteSoundMem(pushSeHandle);
+	DeleteFontToHandle(fontHandle);
 }
 
 void StageSelect::Update()
 {
 	time->TimeUpdate();
-	backTime += time->GetDeltaTime();
 
 	switch (rotatePhase)
 	{
@@ -69,7 +68,7 @@ void StageSelect::Update()
 		RotateUpdate();
 		break;
 	case StageSelect::STOP:
-		if (InputController::getInstance().GetPush(KEY_INPUT_SPACE))
+		/*if (InputController::getInstance().GetPush(KEY_INPUT_SPACE))
 		{
 			PlaySoundMem(pushSeHandle, DX_PLAYTYPE_BACK);
 			rotatePhase = RoratePhase::DECISION;
@@ -80,7 +79,28 @@ void StageSelect::Update()
 			rotatePhase = RoratePhase::ROTATE;
 			time->Reset();
 			selectStage = (selectStage + 1) % stageImageHandle.size();
+		}*/
+		if (InputController::getInstance().GetRelease(KEY_INPUT_SPACE))
+		{
+			if (pressTime > 400)
+			{
+				PlaySoundMem(pushSeHandle, DX_PLAYTYPE_BACK);
+				rotatePhase = RoratePhase::DECISION;
+				time->Reset();
+			}
+			else
+			{
+				rotatePhase = RoratePhase::ROTATE;
+				time->Reset();
+				selectStage = (selectStage + 1) % stageImageHandle.size();
+			}
 		}
+
+		if (InputController::getInstance().GetPress(KEY_INPUT_SPACE))
+			pressTime += time->GetDeltaTime();
+		else
+			pressTime = 0;
+
 		break;
 	case StageSelect::DECISION:
 		if (time->GetTimeCount() > 1000)
@@ -115,7 +135,7 @@ void StageSelect::Update()
 void StageSelect::RotateUpdate()
 {
 	radian += time->GetDeltaTime() * 0.001 * 2.0 * PI / static_cast<double>(stageImageHandle.size());
-	if (time->GetTimeCount() > 700)
+	if (time->GetTimeCount() > 1000)
 	{
 		radian = 0.0;
 		rotatePhase = RoratePhase::STOP;
@@ -129,10 +149,6 @@ void StageSelect::Draw() const
 	auto size = static_cast<double>(stageImageHandle.size());
 	int x, y, c;
 	GetScreenState(&x, &y, &c);
-
-	int i = backTime % 20480 / 16;
-	DrawExtendGraph(i, 0, x + i, 190, backGraph2Handle, TRUE);
-	DrawExtendGraph(i - x, 0, i, 190, backGraph2Handle, TRUE);
 
 	DrawExtendGraph(0, 0, x, y, backGraphHandle, TRUE);
 
@@ -185,10 +201,11 @@ void StageSelect::Draw() const
 		DrawExtendGraph(Perf(x, 15.0 + 70.0 * cos(radian + 0.5 * PI)), 50 + Perf(y, 10.0 - 15.0 * sin(radian + 0.5 * PI)),
 						Perf(x, 85.0 + 70.0 * cos(radian + 0.5 * PI)), 50 + Perf(y, 80.0 - 15.0 * sin(radian + 0.5 * PI)), SIH(0), FALSE);
 
-		a = (time->GetTimeCount() * (4000 - time->GetTimeCount())) / 4000;
+		a = time->GetTimeCount();
 		a = (a > 255) ? 255 : a;
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, a);
-		DrawExtendGraph(100, y - 450, x - 100, y - 50, stageImageHandle.at(selectStage).second, TRUE);
+		DrawStringToHandle(350, y - 120, "’·‰Ÿ‚µ‚·‚é‚ÆŒˆ’è‚·‚é‚æI\n’Z‚­‰Ÿ‚·‚ÆŽŸ‚ð‘I‘ð‚·‚é‚æI", GetColor(255, 255, 255), fontHandle, TRUE);
+		DrawExtendGraph(100, y - 500, x - 100, y - 100, stageImageHandle.at(selectStage).second, TRUE);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 		break;
@@ -204,13 +221,13 @@ void StageSelect::Draw() const
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 		
-		if (time->GetTimeCount() > 190)
+		if (time->GetTimeCount() > 40)
 		{
-			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - (700 - time->GetTimeCount()) / 2);
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255 - (550 - time->GetTimeCount()) / 2);
 			DrawExtendGraph(0, 0, x, y, loadHandle, TRUE);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
-		else if (time->GetTimeCount() > 700)
+		else if (time->GetTimeCount() > 550)
 		{
 			DrawExtendGraph(0, 0, x, y, loadHandle, TRUE);
 		}
