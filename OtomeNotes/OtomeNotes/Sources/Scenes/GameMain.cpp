@@ -10,7 +10,6 @@
 #include"StageSelect.h"
 
 GameMain::GameMain() : VirtualScene(),
-	fileHandle(FileRead_open("Assets/CSV/Notes.csv")),
 	fontHandle(LoadFontDataToHandle("Assets/Fonts/Senobi_m.dft",1)),
 	mFontHandle(LoadFontDataToHandle("Assets/Fonts/Senobi_m64.dft", 1)),
 	largeFontHandle(LoadFontDataToHandle("Assets/Fonts/Senobi_m96.dft", 1)),
@@ -652,6 +651,8 @@ void GameMain::LoadSelectChara()
 	//Himeka
 	if (GameData::getInstance().Stage == 0)
 	{
+		fileHandle = FileRead_open("Assets/CSV/HimekaNotes.csv");
+			
 		modelHandle = Live2D_LoadModel("Assets/Live2d/Himeka/Himeka.model3.json");
 		LoadDivGraph("Assets/Textures/GameMain/HimekaBackGround.png", 3, 1, 3, 640, 360, backGroundHandle);
 
@@ -669,11 +670,13 @@ void GameMain::LoadSelectChara()
 	//Himari
 	else if (GameData::getInstance().Stage == 1)
 	{
+		fileHandle = FileRead_open("Assets/CSV/MahiruNotes.csv");
+
 		modelHandle = Live2D_LoadModel("Assets/Live2d/Mahiru/mahiru.model3.json");
-		LoadDivGraph("Assets/Textures/GameMain/HimekaBackGround.png", 3, 1, 3, 640, 360, backGroundHandle);
+		LoadDivGraph("Assets/Textures/GameMain/MahiruBackGround.png", 3, 1, 3, 640, 360, backGroundHandle);
 
 		Live2D_Model_SetExtendRate(modelHandle, 1.6f, 1.6f);
-		Live2D_Model_SetTranslate(modelHandle, 0.0f, -160.0f);
+		Live2D_Model_SetTranslate(modelHandle, 0.0f, -180.0f);
 
 		bgmHandle = LoadSoundMem("Assets/Sounds/BGM/Mahiru/Mahiru.mp3");
 
@@ -686,11 +689,13 @@ void GameMain::LoadSelectChara()
 	//Manami
 	else if(GameData::getInstance().Stage == 2)
 	{
+		fileHandle = FileRead_open("Assets/CSV/ManamiNotes.csv");
+
 		modelHandle = Live2D_LoadModel("Assets/Live2d/Manami/manami.model3.json");
-		LoadDivGraph("Assets/Textures/GameMain/HimekaBackGround.png", 3, 1, 3, 640, 360, backGroundHandle);
+		LoadDivGraph("Assets/Textures/GameMain/ManamiBackGround.png", 3, 1, 3, 640, 360, backGroundHandle);
 
 		Live2D_Model_SetExtendRate(modelHandle, 1.6f, 1.6f);
-		Live2D_Model_SetTranslate(modelHandle, 0.0f, -140.0f);
+		Live2D_Model_SetTranslate(modelHandle, 0.0f, -160.0f);
 
 		bgmHandle = LoadSoundMem("Assets/Sounds/BGM/Satsuki.mp3");
 
@@ -698,7 +703,7 @@ void GameMain::LoadSelectChara()
 		resultVoiceHandle[1] = LoadSoundMem("Assets/Sounds/Voice/Manami/r2.mp3");
 		resultVoiceHandle[2] = LoadSoundMem("Assets/Sounds/Voice/Manami/r3.mp3");
 
-		charaName = "ÉGÉçétè†";
+		charaName = "î¸íﬂ Ç≥Ç¬Ç´";
 	}
 }
 
