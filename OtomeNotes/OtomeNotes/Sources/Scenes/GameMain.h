@@ -41,8 +41,8 @@ private:
 	int feverBackHandle[2];
 	int krkrHandle;
 	int hwhwHandle[4];
-	const int gaugeHandle;
-	const int gaugeHandle2;
+	int gaugeBackHandle[3];
+	int gaugeFrontHandle[3];
 	const int heartHandle;
 
 	//ƒTƒEƒ“ƒh
@@ -138,4 +138,6 @@ private:
 	std::string ScoreCountTostring(int num, int numerator,int denominator) const;
 
 	template <typename T> void UpdateAndDelete(std::vector<T>&& t, int deltaTime);
+
+	void DeleteGraphArray(int _array[]);
 };

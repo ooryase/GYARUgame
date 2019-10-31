@@ -23,16 +23,14 @@ Title::Title() : VirtualScene(),
 
 Title::~Title()
 {
-	StopSoundMem(bgmHandle);
-
 	DeleteGraph(titleGraphHandle);
 	DeleteGraph(backGraphHandle);
 	DeleteGraph(backGraph2Handle);
 	DeleteGraph(textGraphHandle);
 	DeleteGraph(movieHandle);
-	DeleteSoundMem(bgmHandle);
-	DeleteSoundMem(titleCallHandle);
-	DeleteSoundMem(pushSeHandle);
+	StopSoundMem(bgmHandle);
+	StopSoundMem(titleCallHandle);
+	StopSoundMem(pushSeHandle);
 }
 
 void Title::Update()

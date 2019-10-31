@@ -18,17 +18,27 @@ GameMain::GameMain() : VirtualScene(),
 	frameHandle(LoadGraph("Assets/Textures/GameMain/Frame.png")),
 	SE_notesHandle(LoadSoundMem("Assets/Sounds/SE/note_normal.mp3")),
 	bgmResultHandle(LoadSoundMem("Assets/Sounds/BGM/Result.mp3")),
-	gaugeHandle(LoadGraph("Assets/Textures/GameMain/Gauge1.png")),
-	gaugeHandle2(LoadGraph("Assets/Textures/GameMain/Gauge2.png")),
 	heartHandle(LoadGraph("Assets/Textures/GameMain/Gauge3.png")),
 	reStartHandle(LoadSoundMem("Assets/Sounds/SE/start3.mp3"))
 {
 	LoadDivGraph("Assets/Textures/GameMain/Button.png", 2, 1, 2, 100, 100, buttonHandle);
+
+	gaugeBackHandle[0] = LoadGraph("Assets/Textures/GameMain/Gauge1.png");
+	gaugeBackHandle[1] = MakeScreen(70, 360, TRUE);
+	gaugeBackHandle[2] = MakeScreen(70, 360, TRUE);
+	GraphFilterBlt(gaugeBackHandle[0], gaugeBackHandle[1], DX_GRAPH_FILTER_HSB, 0, 70, 120, 30);
+	GraphFilterBlt(gaugeBackHandle[0], gaugeBackHandle[2], DX_GRAPH_FILTER_HSB, 0, -60, 100, 0);
+	gaugeFrontHandle[0] = LoadGraph("Assets/Textures/GameMain/Gauge2.png");
+	gaugeFrontHandle[1] = MakeScreen(70, 360, TRUE);
+	gaugeFrontHandle[2] = MakeScreen(70, 360, TRUE);
+	GraphFilterBlt(gaugeFrontHandle[0], gaugeFrontHandle[1], DX_GRAPH_FILTER_HSB, 0, 70, 120, 30);
+	GraphFilterBlt(gaugeFrontHandle[0], gaugeFrontHandle[2], DX_GRAPH_FILTER_HSB, 0, -60, 100, 0);
+
 	notesHandle[0] = LoadGraph("Assets/Textures/GameMain/Notes.png");
 	notesHandle[1] = MakeScreen(100, 100, TRUE);
 	notesHandle[2] = MakeScreen(100, 100, TRUE);
-	int i = GraphFilterBlt(notesHandle[0],notesHandle[1], DX_GRAPH_FILTER_HSB,0,-120,0,0);
-	int j = GraphFilterBlt(notesHandle[0],notesHandle[2], DX_GRAPH_FILTER_HSB,0,60,0,0);
+	GraphFilterBlt(notesHandle[0],notesHandle[1], DX_GRAPH_FILTER_HSB,0,-120,0,0);
+	GraphFilterBlt(notesHandle[0],notesHandle[2], DX_GRAPH_FILTER_HSB,0,60,0,0);
 	LoadDivGraph("Assets/Textures/GameMain/FullTexture.png", 3, 1, 3, 640, 360, fullTextHandle);
 	LoadDivGraph("Assets/Textures/GameMain/Fever2.png",2 , 1, 2, 640, 360, feverBackHandle);
 	//feverBackHandle[1] = LoadGraph("Assets/Textures/GameMain/Fever2.png");
@@ -78,20 +88,39 @@ GameMain::GameMain() : VirtualScene(),
 
 GameMain::~GameMain()
 {
+	//Live2dモデル
 	Live2D_DeleteModel(modelHandle);
+
+	//ファイル
 	FileRead_close(fileHandle);
+
+	//フォント
 	DeleteFontToHandle(fontHandle);
 	DeleteFontToHandle(mFontHandle);
 	DeleteFontToHandle(largeFontHandle);
-	DeleteGraph(buttonHandle[0]);
-	DeleteGraph(buttonHandle[1]);
-	DeleteGraph(notesHandle[0]);
-	DeleteGraph(notesHandle[1]);
-	DeleteGraph(notesHandle[2]);
-	DeleteGraph(backGroundHandle[0]);
-	DeleteGraph(backGroundHandle[1]);
-	DeleteGraph(backGroundHandle[2]);
+
+	//テクスチャ
+	DeleteGraphArray(buttonHandle);
+	DeleteGraphArray(notesHandle);
+	DeleteGraph(longNotesHandle);
+	DeleteGraphArray(backGroundHandle);
 	DeleteGraph(textFrameHandle);
+	DeleteGraph(frameHandle);
+	DeleteGraphArray(fullTextHandle);
+	DeleteGraphArray(feverBackHandle);
+	DeleteGraph(krkrHandle);
+	DeleteGraphArray(hwhwHandle);
+	DeleteGraphArray(gaugeBackHandle);
+	DeleteGraphArray(gaugeFrontHandle);
+	DeleteGraph(heartHandle);
+
+	//サウンド
+	DeleteSoundMem(SE_notesHandle);
+	DeleteSoundMem(resultVoiceHandle[0]);
+	DeleteSoundMem(resultVoiceHandle[1]);
+	DeleteSoundMem(resultVoiceHandle[2]);
+	DeleteSoundMem(bgmHandle);
+	DeleteSoundMem(reStartHandle);
 }
 
 
@@ -509,32 +538,12 @@ void GameMain::NextDraw() const
 
 void GameMain::GaugeDraw(int x,int y) const
 {
-	int destHandle;
-	destHandle = MakeScreen(70, 360, TRUE);
-
 	int delta = 360 * feel / 100;
 	delta += (pushTime < 500) ? static_cast<int>((feel - lastFeel) * pushTime / 500.0) : 0;
 	int	Rdelta = 360 - delta;
 
-	switch (fever)
-	{
-	case 0:
-		DrawGraph(x - 120, 60, gaugeHandle, TRUE);
-		DrawRectGraph(x - 120, 60 + Rdelta, 0, Rdelta, 70, delta, gaugeHandle2, TRUE, FALSE);
-		break;
-	case 1:
-		GraphFilterBlt(gaugeHandle, destHandle, DX_GRAPH_FILTER_HSB, 0, 70, 120, 30);
-		DrawGraph(x - 120, 60, destHandle, TRUE);
-
-		GraphFilterBlt(gaugeHandle2, destHandle, DX_GRAPH_FILTER_HSB, 0, 70, 120, 30);
-		DrawRectGraph(x - 120, 60 + Rdelta, 0, Rdelta, 70, delta, destHandle, TRUE, FALSE);
-		break;
-	case -1:
-		GraphFilterBlt(gaugeHandle, destHandle, DX_GRAPH_FILTER_HSB, 0, -60, 100, 0);
-		DrawGraph(x - 120, 60, destHandle, TRUE);
-		DrawRectGraph(x - 120, 60 + Rdelta, 0, Rdelta, 70, delta, gaugeHandle2, TRUE, FALSE);
-		break;
-	}
+	DrawGraph(x - 120, 60, gaugeBackHandle[fever + (fever == -1) * 3], TRUE);
+	DrawRectGraph(x - 120, 60 + Rdelta, 0, Rdelta, 70, delta, gaugeFrontHandle[fever + (fever == -1) * 3], TRUE, FALSE);
 
 	if (pushTime < 500)
 	{
@@ -901,4 +910,12 @@ template <typename T> void GameMain::UpdateAndDelete(std::vector<T>&& t, int del
 GameMain::CharClass::CharClass(char* _text)
 {
 	memcpy(Text, _text, sizeof(Text));
+}
+
+void GameMain::DeleteGraphArray(int _array[])
+{
+	for (int i = 0; i < sizeof(_array) / sizeof(_array[0]); i++)
+	{
+		DeleteGraph(_array[i]);
+	}
 }

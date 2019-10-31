@@ -39,6 +39,7 @@ StageSelect::~StageSelect()
 		DeleteGraph(s.second);
 	}
 
+	DeleteGraph(loadHandle);
 	DeleteGraph(backGraphHandle);
 
 	StopSoundMem(bgmHandle);
@@ -68,19 +69,19 @@ void StageSelect::Update()
 		RotateUpdate();
 		break;
 	case StageSelect::STOP:
-		/*if (InputController::getInstance().GetPush(KEY_INPUT_SPACE))
+		if (InputController::getInstance().GetPush(KEY_INPUT_SPACE))
 		{
 			PlaySoundMem(pushSeHandle, DX_PLAYTYPE_BACK);
 			rotatePhase = RoratePhase::DECISION;
 			time->Reset();
 		}
-		if (time->GetTimeCount() > 4000)
+		/*if (time->GetTimeCount() > 4000)
 		{
 			rotatePhase = RoratePhase::ROTATE;
 			time->Reset();
 			selectStage = (selectStage + 1) % stageImageHandle.size();
 		}*/
-		if (InputController::getInstance().GetRelease(KEY_INPUT_SPACE))
+		/*if (InputController::getInstance().GetRelease(KEY_INPUT_SPACE))
 		{
 			if (pressTime > 400)
 			{
@@ -94,7 +95,7 @@ void StageSelect::Update()
 				time->Reset();
 				selectStage = (selectStage + 1) % stageImageHandle.size();
 			}
-		}
+		}*/
 
 		if (InputController::getInstance().GetPress(KEY_INPUT_SPACE))
 			pressTime += time->GetDeltaTime();
