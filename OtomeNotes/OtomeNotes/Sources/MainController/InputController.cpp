@@ -36,10 +36,8 @@ InputController::KeyState::KeyState()
 
 void InputController::KeyState::InputUpdate(bool input)
 {
-	Push = true;
-	Release = true;
-	//Push = (input && !Press);
-	//Release = (!input && Press);
+	Push = (input && !Press);
+	Release = (!input && Press);
 	Press = input;
 }
 

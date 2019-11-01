@@ -69,3 +69,8 @@ void RepeatedNotes::Push()
 	push = true;
 	Evalution = EvalutionType::DEFAULT;
 }
+
+int RepeatedNotes::GetX() const
+{
+	return x + (time - popToJustTime) / 5;
+}

@@ -64,3 +64,8 @@ int Button::GetTime() const
 {
 	return time;
 }
+
+bool Button::NotActive() const
+{
+	return end && endTimer >= 810;
+}

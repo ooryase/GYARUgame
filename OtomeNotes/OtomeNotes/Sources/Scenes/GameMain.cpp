@@ -660,7 +660,7 @@ void GameMain::LoadSelectChara()
 	//Himeka
 	if (GameData::getInstance().Stage == 0)
 	{
-		fileHandle = FileRead_open("Assets/CSV/HimekaNotes.csv");
+		fileHandle = FileRead_open("Assets/CSV/Himeka.csv");
 			
 		modelHandle = Live2D_LoadModel("Assets/Live2d/Himeka/Himeka.model3.json");
 		LoadDivGraph("Assets/Textures/GameMain/HimekaBackGround.png", 3, 1, 3, 640, 360, backGroundHandle);
@@ -679,7 +679,7 @@ void GameMain::LoadSelectChara()
 	//Himari
 	else if (GameData::getInstance().Stage == 1)
 	{
-		fileHandle = FileRead_open("Assets/CSV/MahiruNotes.csv");
+		fileHandle = FileRead_open("Assets/CSV/Mahiru.csv");
 
 		modelHandle = Live2D_LoadModel("Assets/Live2d/Mahiru/mahiru.model3.json");
 		LoadDivGraph("Assets/Textures/GameMain/MahiruBackGround.png", 3, 1, 3, 640, 360, backGroundHandle);
@@ -698,7 +698,7 @@ void GameMain::LoadSelectChara()
 	//Manami
 	else if(GameData::getInstance().Stage == 2)
 	{
-		fileHandle = FileRead_open("Assets/CSV/ManamiNotes.csv");
+		fileHandle = FileRead_open("Assets/CSV/Satsuki.csv");
 
 		modelHandle = Live2D_LoadModel("Assets/Live2d/Manami/manami.model3.json");
 		LoadDivGraph("Assets/Textures/GameMain/ManamiBackGround.png", 3, 1, 3, 640, 360, backGroundHandle);
@@ -781,7 +781,10 @@ void GameMain::NotesCheck()
 		scoreCount[eva]++;
 		PlaySoundMem(SE_notesHandle, DX_PLAYTYPE_BACK);
 
-		auto i = buttons.at(0)->GetTime() / 5 - 40;
+		//旧ボタンがアクティブなら演出位置を旧(at(0))に、非アクなら新(at(1))にする 
+		int num = buttons.at(0)->NotActive();
+		num -= (num == 1 && var->GetX() > 440) ? 1 : 0;
+		auto i = buttons.at(num)->GetTime() / 5 - 40;
 		switch (eva)
 		{
 		case Notes::EvalutionType::PERFECT:

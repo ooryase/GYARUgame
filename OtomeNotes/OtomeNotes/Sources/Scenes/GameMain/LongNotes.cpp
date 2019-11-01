@@ -63,3 +63,11 @@ void LongNotes::Push()
 
 	Evalution = EvalutionType::DEFAULT;
 }
+
+int LongNotes::GetX() const
+{
+	if (!push)
+		return x;
+	else
+		return x + releaseTime / 5;
+}

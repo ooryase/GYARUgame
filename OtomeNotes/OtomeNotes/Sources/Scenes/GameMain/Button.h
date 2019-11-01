@@ -22,4 +22,9 @@ public:
 	void End();
 
 	int GetTime() const;
+
+	//旧ボタンは新ボタン発生後
+	//810ms (popToJustTimeからBad判定時間だけ引いた値)まで判定基準となるが、
+	//以後は表示されるのみとなる
+	bool NotActive() const;
 };

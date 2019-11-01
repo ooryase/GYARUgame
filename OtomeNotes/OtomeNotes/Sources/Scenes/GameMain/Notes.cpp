@@ -72,3 +72,8 @@ void Notes::Push()
 	Dead = true;
 	Evalution = EvalutionType::DEFAULT;
 }
+
+int Notes::GetX() const
+{
+	return x;
+}

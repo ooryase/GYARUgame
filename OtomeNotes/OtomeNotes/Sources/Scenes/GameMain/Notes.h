@@ -34,4 +34,6 @@ public:
 	virtual void Draw() const;
 
 	virtual void Push();
+
+	virtual int GetX() const;
 };

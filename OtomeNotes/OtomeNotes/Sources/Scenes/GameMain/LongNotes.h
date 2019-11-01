@@ -12,4 +12,5 @@ public:
 	void Draw() const;
 
 	void Push();
+	int GetX() const;
 };
